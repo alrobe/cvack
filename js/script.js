@@ -88,13 +88,105 @@ function edu(x, i) {
  </div></div>`
 }
 function job(x, i) {
-    return `<div class="item"><div class="item-head"><strong>Experiencia ${i + 1}</strong>${itemButtons("employment", i)}</div><div class="grid">
- ${field("Puesto", "title", x.title, "", `data-job="${i}" data-key="title"`)}${field("Empresa / cliente", "organization", x.organization, "", `data-job="${i}" data-key="organization"`)}
- ${field("Inicio", "startDate", x.startDate, "", `data-job="${i}" data-key="startDate"`)}${field("Fin", "endDate", x.endDate, "", `data-job="${i}" data-key="endDate"`)}
- ${field("Tecnologías", "technologies", x.technologies, "full", `data-job="${i}" data-key="technologies"`)}${field("Herramientas", "tools", x.tools, "full", `data-job="${i}" data-key="tools"`)}
- ${field("Control de versiones", "versionControl", x.versionControl, "", `data-job="${i}" data-key="versionControl"`)}${field("Gestión de proyecto", "projectManagement", x.projectManagement, "", `data-job="${i}" data-key="projectManagement"`)}
- <div class="field full"><label>Descripción / logros</label><textarea data-job="${i}" data-key="description">${esc(x.description)}</textarea></div>
- </div></div>`}
+    return `<div class="item">
+        <div class="item-head">
+            <strong>Experiencia ${i + 1}</strong>
+            ${itemButtons("employment", i)}
+        </div>
+
+        <div class="grid">
+
+            ${field(
+        "Puesto",
+        "title",
+        x.title,
+        "",
+        `data-job="${i}" data-key="title"`
+    )}
+
+            ${field(
+        "Empresa / cliente",
+        "organization",
+        x.organization,
+        "",
+        `data-job="${i}" data-key="organization"`
+    )}
+
+            ${field(
+        "Inicio",
+        "startDate",
+        x.startDate,
+        "",
+        `data-job="${i}" data-key="startDate"`
+    )}
+
+            ${field(
+        "Fin",
+        "endDate",
+        x.endDate,
+        "",
+        `data-job="${i}" data-key="endDate"`
+    )}
+
+            ${field(
+        "Tecnologías",
+        "technologies",
+        x.technologies,
+        "full",
+        `data-job="${i}" data-key="technologies"`
+    )}
+
+            ${field(
+        "Tools",
+        "tools",
+        x.tools,
+        "full",
+        `data-job="${i}" data-key="tools"`
+    )}
+
+            ${field(
+        "Framework",
+        "framework",
+        x.framework,
+        "full",
+        `data-job="${i}" data-key="framework"`
+    )}
+
+            ${field(
+        "Control de versiones",
+        "versionControl",
+        x.versionControl,
+        "",
+        `data-job="${i}" data-key="versionControl"`
+    )}
+
+            ${field(
+        "Gestión de proyecto",
+        "projectManagement",
+        x.projectManagement,
+        "",
+        `data-job="${i}" data-key="projectManagement"`
+    )}
+
+            ${field(
+        "Project",
+        "project",
+        x.project,
+        "full",
+        `data-job="${i}" data-key="project"`
+    )}
+
+            <div class="field full">
+                <label>Description / logros</label>
+                <textarea
+                    data-job="${i}"
+                    data-key="description"
+                >${esc(x.description)}</textarea>
+            </div>
+
+        </div>
+    </div>`
+}
 function skill(x, i) { return `<div class="skill"><input data-skill="${i}" data-key="skill" value="${esc(x.skill)}"><select data-skill="${i}" data-key="level">${skillLevels.map(v => `<option ${v == x.level ? "selected" : ""}>${v}</option>`).join("")}</select><button class="icon danger" data-del-skill="${i}">×</button></div>` }
 function lang(x, i) { return `<div class="lang"><input data-lang="${i}" data-key="language" value="${esc(x.language)}"><select data-lang="${i}" data-key="level">${langLevels.map(v => `<option ${v == x.level ? "selected" : ""}>${v}</option>`).join("")}</select><button class="icon danger" data-del-lang="${i}">×</button></div>` }
 
@@ -125,7 +217,24 @@ function bind() {
         render();
         save()
     };
-    document.getElementById("addJob").onclick = () => { data.employment.push({ title: "", organization: "", startDate: "", endDate: "", technologies: "", tools: "", versionControl: "", projectManagement: "", description: "" }); render(); save() };
+    document.getElementById("addJob").onclick = () => {
+        data.employment.push({
+            title: "",
+            organization: "",
+            startDate: "",
+            endDate: "",
+            technologies: "",
+            tools: "",
+            framework: "",
+            versionControl: "",
+            projectManagement: "",
+            project: "",
+            description: ""
+        });
+
+        render();
+        save();
+    };
     document.getElementById("addSkill").onclick = () => { data.skills.push({ skill: "", level: "Good" }); render(); save() };
     document.getElementById("addLang").onclick = () => { data.languages.push({ language: "", level: "B2" }); render(); save() };
     const pf = document.getElementById("photoFile"), pb = document.getElementById("photoBtn"), rp = document.getElementById("removePhoto");
@@ -160,7 +269,7 @@ function preview() {
   <h1>${esc([p.name, p.lastname].filter(Boolean).join(" ") || "Tu nombre")}</h1>
   ${p.headline2 ? `<div class="headline">${esc(p.headline2)}</div>` : ""}
   <h3>Personal details</h3>
-  <div class="contact">${contact.map(v => `<div>${esc(v)}</div>`).join("") || '<div style="opacity:.6">Email · teléfono · ciudad</div>'}</div>
+  <div class="contact">${contact.map(v => `<div>${esc(v)}</div>`).join("") || '<div style="opacity:.6">Email · teléfono · LinkedIn · Website</div>'}</div>
   ${data.skills.some(x => x.skill) ? `<h3>Skills</h3>${data.skills.filter(x => x.skill).map(x => `<div class="cvskill"><span>${esc(x.skill)}</span>${dots(x.level)}</div>`).join("")}` : ""}
   ${data.languages.some(x => x.language) ? `<h3>Languages</h3>${data.languages.filter(x => x.language).map(x => `<div class="cvskill"><span>${esc(x.language)}</span><span>${esc(x.level)}</span></div>`).join("")}` : ""}
   </aside>
@@ -174,7 +283,14 @@ function preview() {
     </p>
   </section>
   ${data.employment.filter(x => x.title || x.organization).length ? `<section><h2>Employment</h2>${data.employment.filter(x => x.title || x.organization).map(x => `<div class="job"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>
-  ${x.technologies ? `<div><b>Technologies:</b> ${esc(x.technologies)}</div>` : ""}${x.tools ? `<div><b>Tools:</b> ${esc(x.tools)}</div>` : ""}${x.versionControl ? `<div><b>Version Control:</b> ${esc(x.versionControl)}</div>` : ""}${x.projectManagement ? `<div><b>Project Management:</b> ${esc(x.projectManagement)}</div>` : ""}${x.description ? `<div style="margin-top:4px">${esc(x.description).replace(/\n/g, "<br>")}</div>` : ""}</div></div>`).join("")}</section>` : ""}
+  ${x.technologies ? `<div><b>Technologies:</b> ${esc(x.technologies)}</div>` : ""}
+  ${x.tools ? `<div><b>Tools:</b> ${esc(x.tools)}</div>` : ""}
+  ${x.framework ? `<div><b>Framework:</b> ${esc(x.framework)}</div>` : ""}
+  ${x.versionControl ? `<div><b>Version Control:</b> ${esc(x.versionControl)}</div>` : ""}
+  ${x.projectManagement ? `<div><b>Project Management:</b> ${esc(x.projectManagement)}</div>` : ""}
+  ${x.project ? `<div><b>Project:</b> ${esc(x.project)}</div>` : ""}
+  ${x.description ? `<div style="margin-top:4px"><b>Description:</b> </br>${esc(x.description).replace(/\n/g, "<br>")}</div>` : ""}
+  </div></div>`).join("")}</section>` : ""}
   ${data.education.filter(x => x.title || x.organization).length ? `<section><h2>Education</h2>${data.education.filter(x => x.title || x.organization).map(x => `<div class="edu"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>${x.description ? `<div style="margin-top:4px">${esc(x.description).replace(/\n/g, "<br>")}</div>` : ""}</div></div>`).join("")}</section>` : ""}
   </main></div>`;
 }
