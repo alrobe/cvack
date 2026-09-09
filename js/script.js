@@ -75,8 +75,8 @@ function render() {
  </section>
 
  <section class="section">
-  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Educación</div><button class="circle" data-collapse="education">⌃</button></div>
-  <div class="section-body"><div id="edu">${data.education.map((x, i) => edu(x, i)).join("")}</div><button class="add" id="addEdu">＋ Añadir formación</button></div>
+  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Skills</div><button class="circle" data-collapse="skills">⌃</button></div>
+  <div class="section-body"><div id="skills">${data.skills.map((x, i) => skill(x, i)).join("")}</div><button class="add" id="addSkill">＋ Añadir skill</button></div>
  </section>
 
  <section class="section">
@@ -85,8 +85,8 @@ function render() {
  </section>
 
  <section class="section">
-  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Skills</div><button class="circle" data-collapse="skills">⌃</button></div>
-  <div class="section-body"><div id="skills">${data.skills.map((x, i) => skill(x, i)).join("")}</div><button class="add" id="addSkill">＋ Añadir skill</button></div>
+  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Educación</div><button class="circle" data-collapse="education">⌃</button></div>
+  <div class="section-body"><div id="edu">${data.education.map((x, i) => edu(x, i)).join("")}</div><button class="add" id="addEdu">＋ Añadir formación</button></div>
  </section>
 
  <section class="section">
@@ -110,7 +110,9 @@ function edu(x, i) {
     return `<div class="item"><div class="item-head"><strong>Formación ${i + 1}</strong>${itemButtons("education", i)}</div><div class="grid">
  ${field("Título / formación", "title", x.title, "", `data-edu="${i}" data-key="title"`)}${field("Institución", "organization", x.organization, "", `data-edu="${i}" data-key="organization"`)}
  ${field("Inicio", "startDate", x.startDate, "", `data-edu="${i}" data-key="startDate"`)}${field("Fin", "endDate", x.endDate, "", `data-edu="${i}" data-key="endDate"`)}
- </div></div>`}
+ <div class="field full"><label>Descripción</label><textarea data-edu="${i}" data-key="description">${esc(x.description)}</textarea></div>
+ </div></div>`
+}
 function job(x, i) {
     return `<div class="item"><div class="item-head"><strong>Experiencia ${i + 1}</strong>${itemButtons("employment", i)}</div><div class="grid">
  ${field("Puesto", "title", x.title, "", `data-job="${i}" data-key="title"`)}${field("Empresa / cliente", "organization", x.organization, "", `data-job="${i}" data-key="organization"`)}
@@ -142,7 +144,8 @@ function bind() {
             title: "",
             organization: "",
             startDate: "",
-            endDate: ""
+            endDate: "",
+            description: ""
         });
         render();
         save()
@@ -185,10 +188,10 @@ function preview() {
  </aside>
  <main class="main">
   <section><h2>Profile</h2><p class="profile">${data.profile ? esc(data.profile).replace(/\n/g, "<br>") : '<span class="empty">Añade una descripción profesional.</span>'}</p></section>
-  ${data.education.filter(x => x.title || x.organization).length ? `<section><h2>Education</h2>${data.education.filter(x => x.title || x.organization).map(x => `<div class="edu"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div></div></div>`).join("")}</section>` : ""}
   ${data.employment.filter(x => x.title || x.organization).length ? `<section><h2>Employment</h2>${data.employment.filter(x => x.title || x.organization).map(x => `<div class="job"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>
   ${x.technologies ? `<div><b>Technologies:</b> ${esc(x.technologies)}</div>` : ""}${x.tools ? `<div><b>Tools:</b> ${esc(x.tools)}</div>` : ""}${x.versionControl ? `<div><b>Version Control:</b> ${esc(x.versionControl)}</div>` : ""}${x.projectManagement ? `<div><b>Project Management:</b> ${esc(x.projectManagement)}</div>` : ""}${x.description ? `<div style="margin-top:4px">${esc(x.description).replace(/\n/g, "<br>")}</div>` : ""}</div></div>`).join("")}</section>` : ""}
- </main></div>`;
+  ${data.education.filter(x => x.title || x.organization).length ? `<section><h2>Education</h2>${data.education.filter(x => x.title || x.organization).map(x => `<div class="edu"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>${x.description ? `<div style="margin-top:4px">${esc(x.description).replace(/\n/g, "<br>")}</div>` : ""}</div></div>`).join("")}</section>` : ""}
+  </main></div>`;
 }
 
 function getResumeFileName(extension) {
