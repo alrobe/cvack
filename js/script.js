@@ -1,22 +1,22 @@
 const empty = {
-    personal: { 
-        name: "", 
-        headline: "", 
-        headline2:"",
-        email: "", 
-        phone: "", 
-        address: "", 
-        postcode: "", 
-        city: "", 
-        website: "", 
-        linkedin: "", 
-        dob: "", 
-        birthPlace: "", 
-        license: "", 
-        gender: "", 
-        nationality: "", 
-        civilStatus: "", 
-        photo: "" 
+    personal: {
+        name: "",
+        headline: "",
+        headline2: "",
+        email: "",
+        phone: "",
+        address: "",
+        postcode: "",
+        city: "",
+        website: "",
+        linkedin: "",
+        dob: "",
+        birthPlace: "",
+        license: "",
+        gender: "",
+        nationality: "",
+        civilStatus: "",
+        photo: ""
     },
     profile: "",
     education: [],
@@ -27,38 +27,44 @@ const empty = {
 };
 let data = JSON.parse(localStorage.getItem("orange-cv") || "null") || structuredClone(empty);
 const skillLevels = ["Beginner", "Moderate", "Good", "Very good", "Excellent"];
-const langLevels = ["A1", "A2", "B1", "B2", "C1", "C2", "Fluent"];
+const langLevels = ["Beginner", "Moderate", "Good", "Very good", "Fluent", "A1", "A2", "B1", "B2", "C1", "C2"];
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
 const save = () => { localStorage.setItem("orange-cv", JSON.stringify(data)); preview() };
 const toast = t => { let e = document.getElementById("toast"); e.textContent = t; e.classList.add("show"); setTimeout(() => e.classList.remove("show"), 1700) };
-function field(label, key, val, cls = "", attrs = "") { 
-    return `<div class="field ${cls}"><label>${label}</label><input ${attrs} value="${esc(val)}"></div>` 
+function field(label, key, val, cls = "", attrs = "") {
+    return `<div class="field ${cls}"><label>${label}</label><input ${attrs} value="${esc(val)}"></div>`
 }
 function itemButtons(type, i) { return `<div class="item-actions"><div class="reorder"><button title="Subir" data-up="${type}:${i}">↑</button><button title="Bajar" data-down="${type}:${i}">↓</button></div><button class="icon danger" data-del="${type}:${i}">×</button></div>` }
 function render() {
     const p = data.personal;
+
+    const collapsedSections = new Set(
+        [...document.querySelectorAll(".section.collapsed [data-collapse]")]
+            .map(el => el.dataset.collapse)
+    );
+
     document.getElementById("editor").innerHTML = `
  <section class="section" data-section="personal">
   <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Datos personales</div><button class="circle" data-collapse="personal">⌃</button></div>
   <div class="section-body">
    <div class="photo-row"><div class="photo-box">${p.photo ? `<img src="${p.photo}">` : "<span>＋</span>"}</div><div class="photo-info"><b>Foto</b><br>Opcional. Recomendación: imagen profesional cuadrada.<br><button class="btn small" id="photoBtn">Añadir foto</button><button class="btn small hidden" id="removePhoto">Eliminar</button><input id="photoFile" type="file" accept="image/*" hidden></div></div>
    <div class="grid">
-    ${field("Nombre","name",p.name,"",`data-p="name"`)}
-    ${field("Apellido / nombre completo","headline",p.headline,"",`data-p="headline"`)}
-    ${field("Puesto deseado","headline2",p.headline2||"","",`data-p="headline2"`)}
-    ${field("Email","email",p.email,"",`data-p="email"`)}
-    ${field("Teléfono","phone",p.phone,"",`data-p="phone"`)}
-    ${field("Dirección","address",p.address,"full",`data-p="address"`)}
-    ${field("Código postal","postcode",p.postcode,"",`data-p="postcode"`)}
-    ${field("Ciudad","city",p.city,"",`data-p="city"`)}
-    ${field("Website","website",p.website,"",`data-p="website"`)}
-    ${field("LinkedIn","linkedin",p.linkedin,"",`data-p="linkedin"`)}
-    ${field("Fecha de nacimiento","dob",p.dob,"",`data-p="dob"`)}
-    ${field("Lugar de nacimiento","birthPlace",p.birthPlace,"",`data-p="birthPlace"`)}
-    ${field("Licencia de conducir","license",p.license,"",`data-p="license"`)}
-    ${field("Género","gender",p.gender,"",`data-p="gender"`)}
-    ${field("Nacionalidad","nationality",p.nationality,"",`data-p="nationality"`)}
-    ${field("Estado civil","civilStatus",p.civilStatus,"",`data-p="civilStatus"`)}
+    ${field("Nombre", "name", p.name, "", `data-p="name"`)}
+    ${field("Apellido", "headline", p.headline, "", `data-p="headline"`)}
+    ${field("Puesto deseado", "headline2", p.headline2 || "", "", `data-p="headline2"`)}
+    ${field("Email", "email", p.email, "", `data-p="email"`)}
+    ${field("Teléfono", "phone", p.phone, "", `data-p="phone"`)}
+    ${field("Dirección", "address", p.address, "full", `data-p="address"`)}
+    ${field("Código postal", "postcode", p.postcode, "", `data-p="postcode"`)}
+    ${field("Ciudad", "city", p.city, "", `data-p="city"`)}
+    ${field("Website", "website", p.website, "", `data-p="website"`)}
+    ${field("LinkedIn", "linkedin", p.linkedin, "", `data-p="linkedin"`)}
+    ${field("Fecha de nacimiento", "dob", p.dob, "", `data-p="dob"`)}
+    ${field("Lugar de nacimiento", "birthPlace", p.birthPlace, "", `data-p="birthPlace"`)}
+    ${field("Licencia de conducir", "license", p.license, "", `data-p="license"`)}
+    ${field("Género", "gender", p.gender, "", `data-p="gender"`)}
+    ${field("Nacionalidad", "nationality", p.nationality, "", `data-p="nationality"`)}
+    ${field("Estado civil", "civilStatus", p.civilStatus, "", `data-p="civilStatus"`)}
    </div>
   </div>
  </section>
@@ -91,9 +97,14 @@ function render() {
  <section class="section">
   <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Hobbies</div><button class="circle" data-collapse="hobbies">⌃</button></div>
   <div class="section-body"><div>${data.hobbies.map((x, i) => `<div class="hobby"><input data-hobby="${i}" value="${esc(x)}"><button class="icon danger" data-del-hobby="${i}">×</button></div>`).join("")}</div><button class="add" id="addHobby">＋ Añadir hobby</button>
-  <div class="note">Todo se guarda automáticamente en este navegador. Usa Exportar CSV para hacer una copia o trasladar el CV a otro equipo.</div></div>
+  <div class="note">Todo se guarda automáticamente en este navegador. Usa Exportar JSON para hacer una copia o trasladar el CV a otro equipo.</div></div>
  </section>`;
     bind();
+    document.querySelectorAll("[data-collapse]").forEach(button => {
+        if (collapsedSections.has(button.dataset.collapse)) {
+            button.closest(".section").classList.add("collapsed");
+        }
+    });
 }
 function edu(x, i) {
     return `<div class="item"><div class="item-head"><strong>Formación ${i + 1}</strong>${itemButtons("education", i)}</div><div class="grid">
@@ -126,7 +137,16 @@ function bind() {
     document.querySelectorAll("[data-del-hobby]").forEach(b => b.onclick = () => { data.hobbies.splice(+b.dataset.delHobby, 1); render(); save() });
     document.querySelectorAll("[data-up]").forEach(b => b.onclick = () => move(b.dataset.up, -1));
     document.querySelectorAll("[data-down]").forEach(b => b.onclick = () => move(b.dataset.down, 1));
-    document.getElementById("addEdu").onclick = () => { data.education.push({ title: "", organization: "", startDate: "", endDate: "" }); render(); save() };
+    document.getElementById("addEdu").onclick = () => {
+        data.education.push({
+            title: "",
+            organization: "",
+            startDate: "",
+            endDate: ""
+        });
+        render();
+        save()
+    };
     document.getElementById("addJob").onclick = () => { data.employment.push({ title: "", organization: "", startDate: "", endDate: "", technologies: "", tools: "", versionControl: "", projectManagement: "", description: "" }); render(); save() };
     document.getElementById("addSkill").onclick = () => { data.skills.push({ skill: "", level: "Good" }); render(); save() };
     document.getElementById("addLang").onclick = () => { data.languages.push({ language: "", level: "B2" }); render(); save() };
@@ -138,14 +158,24 @@ function bind() {
 }
 function move(spec, dir) { let [t, i] = spec.split(":"); i = +i; let j = i + dir; if (j < 0 || j >= data[t].length) return;[data[t][i], data[t][j]] = [data[t][j], data[t][i]]; render(); save() }
 
-function dots(level) { let n = skillLevels.indexOf(level) + 1; if (n < 1) n = 3; return `<span class="dots">{"●".repeat(n)}<span style="opacity:.38">{"●".repeat(5-n)}</span></span>` }
+function dots(level) {
+    let n = skillLevels.indexOf(level) + 1;
+
+    if (n < 1) n = 3;
+
+    return `
+        <span class="dots">
+            ${"●".repeat(n)}<span style="opacity:.38">${"●".repeat(5 - n)}</span>
+        </span>
+    `;
+}
 function preview() {
     let p = data.personal;
     let contact = [p.email, p.phone, p.address, p.city, p.linkedin, p.website].filter(Boolean);
     document.getElementById("preview").innerHTML = `<div class="paper">
  <aside class="side">
   ${p.photo ? `<div class="photo"><img src="${p.photo}"></div>` : ""}
-  <h1>${esc(p.name || "Tu nombre")}</h1>
+  <h1>${esc([p.name, p.headline].filter(Boolean).join(" ") || "Tu nombre")}</h1>
   ${p.headline2 ? `<div class="headline">${esc(p.headline2)}</div>` : ""}
   <h3>Personal details</h3>
   <div class="contact">${contact.map(v => `<div>${esc(v)}</div>`).join("") || '<div style="opacity:.6">Email · teléfono · ciudad</div>'}</div>
@@ -161,44 +191,107 @@ function preview() {
  </main></div>`;
 }
 
-const headers = ["section", "name", "headline", "headline2", "email", "phone", "address", "postcode", "city", "website", "linkedin", "dob", "birthPlace", "license", "gender", "nationality", "civilStatus", "photo", "description", "title", "organization", "startDate", "endDate", "technologies", "tools", "versionControl", "projectManagement", "skill", "level", "language", "hobby"];
-const ce = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
-function csv() {
-    let rows = [headers];
+function getResumeFileName(extension) {
     const p = data.personal;
-    rows.push(["personal", p.name, p.headline, p.headline2, p.email, p.phone, p.address, p.postcode, p.city, p.website, p.linkedin, p.dob, p.birthPlace, p.license, p.gender, p.nationality, p.civilStatus, p.photo]);
-    rows.push(["profile", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", data.profile]);
-    data.education.forEach(x => rows.push(["education", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", x.title, x.organization, x.startDate, x.endDate]));
-    data.employment.forEach(x => rows.push(["employment", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", x.description, x.title, x.organization, x.startDate, x.endDate, x.technologies, x.tools, x.versionControl, x.projectManagement]));
-    data.skills.forEach(x => rows.push(["skill", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", x.skill, x.level]));
-    data.languages.forEach(x => rows.push(["language", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", x.language, x.level]));
-    data.hobbies.forEach(x => rows.push(["hobby", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", x]));
-    return rows.map(r => headers.map((_, i) => ce(r[i])).join(",")).join("\r\n");
+
+    const name = [p.name, p.headline]
+        .filter(Boolean)
+        .join("_");
+
+    const now = new Date();
+
+    const day = String(now.getDate()).padStart(2, "0");
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const year = now.getFullYear();
+
+    return `RESUME_${name || "CV"}-${day}${month}${year}.${extension}`;
 }
-function download(name, text, type) { let a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000) }
-function parseCSV(s) {
-    let rows = [], row = [], cell = "", q = false;
-    for (let i = 0; i < s.length; i++) { let c = s[i], n = s[i + 1]; if (c == '"' && q && n == '"') { cell += '"'; i++; continue } if (c == '"') { q = !q; continue } if (c == "," && !q) { row.push(cell); cell = ""; continue } if ((c == "\n" || c == "\r") && !q) { if (c == "\r" && n == "\n") i++; row.push(cell); if (row.some(Boolean)) rows.push(row); row = []; cell = ""; continue } cell += c }
-    row.push(cell); if (row.some(Boolean)) rows.push(row); return rows;
+
+function download(name, text, type) {
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], { type }));
+    a.download = name;
+    a.click();
+
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
-function importCSV(s) {
-    let rs = parseCSV(s), h = rs[0]; let I = k => h.indexOf(k), g = (r, k) => I(k) >= 0 ? (r[I(k)] || "") : "";
-    data = structuredClone(empty);
-    rs.slice(1).forEach(r => {
-        let sec = g(r, "section");
-        if (sec == "personal") Object.keys(data.personal).forEach(k => data.personal[k] = g(r, k));
-        else if (sec == "profile") data.profile = g(r, "description");
-        else if (sec == "education") data.education.push({ title: g(r, "title"), organization: g(r, "organization"), startDate: g(r, "startDate"), endDate: g(r, "endDate") });
-        else if (sec == "employment") data.employment.push({ title: g(r, "title"), organization: g(r, "organization"), startDate: g(r, "startDate"), endDate: g(r, "endDate"), technologies: g(r, "technologies"), tools: g(r, "tools"), versionControl: g(r, "versionControl"), projectManagement: g(r, "projectManagement"), description: g(r, "description") });
-        else if (sec == "skill") data.skills.push({ skill: g(r, "skill"), level: g(r, "level") || "Good" });
-        else if (sec == "language") data.languages.push({ language: g(r, "language"), level: g(r, "level") || "B2" });
-        else if (sec == "hobby") data.hobbies.push(g(r, "hobby"));
-    });
-    localStorage.setItem("orange-cv", JSON.stringify(data)); render(); preview(); toast("CV importado correctamente");
+
+function exportJSON() {
+    const json = JSON.stringify(data, null, 2);
+    download(
+        getResumeFileName("json"),
+        json,
+        "application/json;charset=utf-8"
+    );
+
+    toast("CV exportado correctamente");
 }
-document.getElementById("export").onclick = () => download("cv-data.csv", csv(), "text/csv;charset=utf-8");
-document.getElementById("import").onclick = () => document.getElementById("file").click();
-document.getElementById("file").onchange = e => { let f = e.target.files[0]; if (!f) return; let r = new FileReader(); r.onload = () => { try { importCSV(r.result) } catch (err) { alert("CSV no válido") } }; r.readAsText(f, "utf-8"); e.target.value = "" };
+
+function importJSON(s) {
+    const imported = JSON.parse(s);
+
+    // Validación básica
+    if (!imported || typeof imported !== "object") {
+        throw new Error("JSON no válido");
+    }
+
+    data = {
+        ...structuredClone(empty),
+        ...imported,
+        personal: {
+            ...structuredClone(empty.personal),
+            ...(imported.personal || {})
+        },
+        education: Array.isArray(imported.education)
+            ? imported.education
+            : [],
+        employment: Array.isArray(imported.employment)
+            ? imported.employment
+            : [],
+        skills: Array.isArray(imported.skills)
+            ? imported.skills
+            : [],
+        languages: Array.isArray(imported.languages)
+            ? imported.languages
+            : [],
+        hobbies: Array.isArray(imported.hobbies)
+            ? imported.hobbies
+            : []
+    };
+
+    localStorage.setItem("orange-cv", JSON.stringify(data));
+
+    render();
+    preview();
+
+    toast("CV importado correctamente");
+}
+document.getElementById("export").onclick = () => {
+    exportJSON();
+};
+document.getElementById("import").onclick = () => {
+    document.getElementById("file").click();
+};
+document.getElementById("file").onchange = e => {
+    let f = e.target.files[0];
+
+    if (!f) return;
+
+    let r = new FileReader();
+
+    r.onload = () => {
+        try {
+            importJSON(r.result);
+        } catch (err) {
+            console.error(err);
+            alert("JSON no válido");
+        }
+    };
+
+    r.readAsText(f, "utf-8");
+
+    e.target.value = "";
+};
 document.getElementById("pdf").onclick = () => { toast("Abriendo impresión: elige Guardar como PDF"); setTimeout(() => window.print(), 250) };
-document.getElementById("new").onclick = () => { if (confirm("¿Crear un CV nuevo? Exporta primero tu CSV si quieres conservar este.")) { data = structuredClone(empty); localStorage.removeItem("orange-cv"); render(); preview(); toast("CV nuevo") } };
+document.getElementById("new").onclick = () => { if (confirm("¿Crear un CV nuevo? Exporta primero tu JSON si quieres conservar este.")) { data = structuredClone(empty); localStorage.removeItem("orange-cv"); render(); preview(); toast("CV nuevo") } };
 render(); preview();
