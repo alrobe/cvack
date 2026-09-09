@@ -297,8 +297,6 @@ document.getElementById("pdf").onclick = () => {
 
     document.title = getResumeFileName("pdf").replace(/\.pdf$/i, "");
 
-    toast("Abriendo impresión: elige Guardar como PDF");
-
     setTimeout(() => {
         window.print();
 
