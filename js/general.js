@@ -1,19 +1,29 @@
 const empty = {
     personal: {
         name: "",
-        lastname: "",
+        headline: "",
         headline2: "",
         email: "",
         phone: "",
-        linkedin: "",
+        address: "",
+        postcode: "",
+        city: "",
         website: "",
-        description: "",
+        linkedin: "",
+        dob: "",
+        birthPlace: "",
+        license: "",
+        gender: "",
+        nationality: "",
+        civilStatus: "",
         photo: ""
     },
+    profile: "",
     education: [],
     employment: [],
     skills: [],
     languages: [],
+    hobbies: []
 };
 let data = JSON.parse(localStorage.getItem("orange-cv") || "null") || structuredClone(empty);
 const skillLevels = ["Beginner", "Moderate", "Good", "Very good", "Excellent"];
@@ -40,18 +50,28 @@ function render() {
    <div class="photo-row"><div class="photo-box">${p.photo ? `<img src="${p.photo}">` : "<span>＋</span>"}</div><div class="photo-info"><b>Foto</b><br>Opcional. Recomendación: imagen profesional cuadrada.<br><button class="btn small" id="photoBtn">Añadir foto</button><button class="btn small hidden" id="removePhoto">Eliminar</button><input id="photoFile" type="file" accept="image/*" hidden></div></div>
    <div class="grid">
     ${field("Nombre", "name", p.name, "", `data-p="name"`)}
-    ${field("Apellido", "lastname", p.lastname, "", `data-p="lastname"`)}
-    ${field("Puesto deseado", "headline2", p.headline2, "full", `data-p="headline2"`)}
+    ${field("Apellido", "headline", p.headline, "", `data-p="headline"`)}
+    ${field("Puesto deseado", "headline2", p.headline2 || "", "", `data-p="headline2"`)}
     ${field("Email", "email", p.email, "", `data-p="email"`)}
     ${field("Teléfono", "phone", p.phone, "", `data-p="phone"`)}
-    ${field("LinkedIn", "linkedin", p.linkedin, "", `data-p="linkedin"`)}
+    ${field("Dirección", "address", p.address, "full", `data-p="address"`)}
+    ${field("Código postal", "postcode", p.postcode, "", `data-p="postcode"`)}
+    ${field("Ciudad", "city", p.city, "", `data-p="city"`)}
     ${field("Website", "website", p.website, "", `data-p="website"`)}
-    <div class="field full">
-        <label>Description</label>
-        <textarea id="description">${esc(p.description)}</textarea>
-    </div>
+    ${field("LinkedIn", "linkedin", p.linkedin, "", `data-p="linkedin"`)}
+    ${field("Fecha de nacimiento", "dob", p.dob, "", `data-p="dob"`)}
+    ${field("Lugar de nacimiento", "birthPlace", p.birthPlace, "", `data-p="birthPlace"`)}
+    ${field("Licencia de conducir", "license", p.license, "", `data-p="license"`)}
+    ${field("Género", "gender", p.gender, "", `data-p="gender"`)}
+    ${field("Nacionalidad", "nationality", p.nationality, "", `data-p="nationality"`)}
+    ${field("Estado civil", "civilStatus", p.civilStatus, "", `data-p="civilStatus"`)}
    </div>
   </div>
+ </section>
+
+ <section class="section">
+  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Perfil</div><button class="circle" data-collapse="profile">⌃</button></div>
+  <div class="section-body"><div class="field"><label>Descripción</label><textarea id="profile">${esc(data.profile)}</textarea></div></div>
  </section>
 
  <section class="section">
@@ -72,6 +92,12 @@ function render() {
  <section class="section">
   <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Idiomas</div><button class="circle" data-collapse="languages">⌃</button></div>
   <div class="section-body"><div id="langs">${data.languages.map((x, i) => lang(x, i)).join("")}</div><button class="add" id="addLang">＋ Añadir idioma</button></div>
+ </section>
+
+ <section class="section">
+  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Hobbies</div><button class="circle" data-collapse="hobbies">⌃</button></div>
+  <div class="section-body"><div>${data.hobbies.map((x, i) => `<div class="hobby"><input data-hobby="${i}" value="${esc(x)}"><button class="icon danger" data-del-hobby="${i}">×</button></div>`).join("")}</div><button class="add" id="addHobby">＋ Añadir hobby</button>
+  <div class="note">Todo se guarda automáticamente en este navegador. Usa Exportar JSON para hacer una copia o trasladar el CV a otro equipo.</div></div>
  </section>`;
     bind();
     document.querySelectorAll("[data-collapse]").forEach(button => {
@@ -100,18 +126,17 @@ function lang(x, i) { return `<div class="lang"><input data-lang="${i}" data-key
 
 function bind() {
     document.querySelectorAll("[data-p]").forEach(e => e.addEventListener("input", () => { data.personal[e.dataset.p] = e.value; save() }));
-    document.getElementById("description").oninput = e => {
-        data.personal.description = e.target.value;
-        save();
-    };
+    document.getElementById("profile").oninput = e => { data.profile = e.target.value; save() };
     document.querySelectorAll("[data-edu]").forEach(e => e.oninput = () => { data.education[+e.dataset.edu][e.dataset.key] = e.value; save() });
     document.querySelectorAll("[data-job]").forEach(e => e.oninput = () => { data.employment[+e.dataset.job][e.dataset.key] = e.value; save() });
     document.querySelectorAll("[data-skill]").forEach(e => { e.oninput = () => { data.skills[+e.dataset.skill][e.dataset.key] = e.value; save() }; e.onchange = e.oninput });
     document.querySelectorAll("[data-lang]").forEach(e => { e.oninput = () => { data.languages[+e.dataset.lang][e.dataset.key] = e.value; save() }; e.onchange = e.oninput });
+    document.querySelectorAll("[data-hobby]").forEach(e => e.oninput = () => { data.hobbies[+e.dataset.hobby] = e.value; save() });
     document.querySelectorAll("[data-collapse]").forEach(b => b.onclick = () => b.closest(".section").classList.toggle("collapsed"));
     document.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { let [t, i] = b.dataset.del.split(":"); data[t].splice(+i, 1); render(); save() });
     document.querySelectorAll("[data-del-skill]").forEach(b => b.onclick = () => { data.skills.splice(+b.dataset.delSkill, 1); render(); save() });
     document.querySelectorAll("[data-del-lang]").forEach(b => b.onclick = () => { data.languages.splice(+b.dataset.delLang, 1); render(); save() });
+    document.querySelectorAll("[data-del-hobby]").forEach(b => b.onclick = () => { data.hobbies.splice(+b.dataset.delHobby, 1); render(); save() });
     document.querySelectorAll("[data-up]").forEach(b => b.onclick = () => move(b.dataset.up, -1));
     document.querySelectorAll("[data-down]").forEach(b => b.onclick = () => move(b.dataset.down, 1));
     document.getElementById("addEdu").onclick = () => {
@@ -128,6 +153,7 @@ function bind() {
     document.getElementById("addJob").onclick = () => { data.employment.push({ title: "", organization: "", startDate: "", endDate: "", technologies: "", tools: "", versionControl: "", projectManagement: "", description: "" }); render(); save() };
     document.getElementById("addSkill").onclick = () => { data.skills.push({ skill: "", level: "Good" }); render(); save() };
     document.getElementById("addLang").onclick = () => { data.languages.push({ language: "", level: "B2" }); render(); save() };
+    document.getElementById("addHobby").onclick = () => { data.hobbies.push(""); render(); save() };
     const pf = document.getElementById("photoFile"), pb = document.getElementById("photoBtn"), rp = document.getElementById("removePhoto");
     if (data.personal.photo) { rp.classList.remove("hidden") }
     pb.onclick = () => pf.click(); rp.onclick = () => { data.personal.photo = ""; render(); save() };
@@ -148,31 +174,20 @@ function dots(level) {
 }
 function preview() {
     let p = data.personal;
-    let contact = [
-        p.email,
-        p.phone,
-        p.linkedin,
-        p.website
-    ].filter(Boolean);
+    let contact = [p.email, p.phone, p.address, p.city, p.linkedin, p.website].filter(Boolean);
     document.getElementById("preview").innerHTML = `<div class="paper">
  <aside class="side">
   ${p.photo ? `<div class="photo"><img src="${p.photo}"></div>` : ""}
-  <h1>${esc([p.name, p.lastname].filter(Boolean).join(" ") || "Tu nombre")}</h1>
+  <h1>${esc([p.name, p.headline].filter(Boolean).join(" ") || "Tu nombre")}</h1>
   ${p.headline2 ? `<div class="headline">${esc(p.headline2)}</div>` : ""}
   <h3>Personal details</h3>
   <div class="contact">${contact.map(v => `<div>${esc(v)}</div>`).join("") || '<div style="opacity:.6">Email · teléfono · ciudad</div>'}</div>
   ${data.skills.some(x => x.skill) ? `<h3>Skills</h3>${data.skills.filter(x => x.skill).map(x => `<div class="cvskill"><span>${esc(x.skill)}</span>${dots(x.level)}</div>`).join("")}` : ""}
   ${data.languages.some(x => x.language) ? `<h3>Languages</h3>${data.languages.filter(x => x.language).map(x => `<div class="cvskill"><span>${esc(x.language)}</span><span>${esc(x.level)}</span></div>`).join("")}` : ""}
-  </aside>
-  <main class="main">
-  <section>
-    <h2>Profile</h2>
-    <p class="profile">
-        ${p.description
-            ? esc(p.description).replace(/\n/g, "<br>")
-            : '<span class="empty">Añade una descripción profesional.</span>'}
-    </p>
-  </section>
+  ${data.hobbies.filter(Boolean).length ? `<h3>Hobbies</h3><div class="contact">${data.hobbies.filter(Boolean).map(x => `<div>${esc(x)}</div>`).join("")}</div>` : ""}
+ </aside>
+ <main class="main">
+  <section><h2>Profile</h2><p class="profile">${data.profile ? esc(data.profile).replace(/\n/g, "<br>") : '<span class="empty">Añade una descripción profesional.</span>'}</p></section>
   ${data.employment.filter(x => x.title || x.organization).length ? `<section><h2>Employment</h2>${data.employment.filter(x => x.title || x.organization).map(x => `<div class="job"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>
   ${x.technologies ? `<div><b>Technologies:</b> ${esc(x.technologies)}</div>` : ""}${x.tools ? `<div><b>Tools:</b> ${esc(x.tools)}</div>` : ""}${x.versionControl ? `<div><b>Version Control:</b> ${esc(x.versionControl)}</div>` : ""}${x.projectManagement ? `<div><b>Project Management:</b> ${esc(x.projectManagement)}</div>` : ""}${x.description ? `<div style="margin-top:4px">${esc(x.description).replace(/\n/g, "<br>")}</div>` : ""}</div></div>`).join("")}</section>` : ""}
   ${data.education.filter(x => x.title || x.organization).length ? `<section><h2>Education</h2>${data.education.filter(x => x.title || x.organization).map(x => `<div class="edu"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>${x.description ? `<div style="margin-top:4px">${esc(x.description).replace(/\n/g, "<br>")}</div>` : ""}</div></div>`).join("")}</section>` : ""}
@@ -182,7 +197,7 @@ function preview() {
 function getResumeFileName(extension) {
     const p = data.personal;
 
-    const name = [p.name, p.lastname]
+    const name = [p.name, p.headline]
         .filter(Boolean)
         .join("_");
 
@@ -242,6 +257,9 @@ function importJSON(s) {
         languages: Array.isArray(imported.languages)
             ? imported.languages
             : [],
+        hobbies: Array.isArray(imported.hobbies)
+            ? imported.hobbies
+            : []
     };
 
     localStorage.setItem("orange-cv", JSON.stringify(data));

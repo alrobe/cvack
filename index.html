@@ -1,34 +1,134 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CVack</title>
-<link rel="stylesheet" href="./css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CVack — Crear tu CV</title>
+
+    <link rel="stylesheet" href="./css/home.css">
 </head>
+
 <body>
+
 <header class="top">
- <div class="logo">CV<b>ack</b></div>
- <div class="top-actions">
-  <button class="btn" id="new">Nuevo</button>
-  <button class="btn" id="import">Importar Json</button>
-  <button class="btn" id="export">Exportar Json</button>
-  <button class="btn orange" id="pdf">Descargar CV</button>
-  <input type="file" id="file" accept=".json,application/json" hidden>
- </div>
+    <div class="logo">
+        CV<b>ack</b>
+    </div>
 </header>
 
-<div class="app">
- <div class="editor-panel">
-  <div class="editor-head">Editar CV</div>
-  <div class="editor" id="editor"></div>
- </div>
- <div class="preview-panel">
-  <div class="preview-head"><strong>Vista previa</strong><small>Orange Resume · A4</small></div>
-  <div class="preview-area" id="preview"></div>
- </div>
-</div>
-<div class="toast" id="toast"></div>
-<script src="js/script.js"></script>
+
+<main class="home">
+
+    <section class="hero">
+
+        <span class="eyebrow">CVack · Resume Builder</span>
+
+        <h1>
+            ¿Qué tipo de CV<br>
+            quieres crear?
+        </h1>
+
+        <p>
+            Elige una plantilla según el tipo de perfil que quieras
+            presentar. Podrás editar tu información y descargar tu CV
+            en PDF cuando quieras.
+        </p>
+
+    </section>
+
+
+    <section class="cv-options">
+
+        <!-- CV GENÉRICO -->
+        <article class="cv-card">
+
+            <div class="card-icon generic-icon">
+                <span>CV</span>
+            </div>
+
+            <div class="card-content">
+
+                <span class="card-label">
+                    Para cualquier profesión
+                </span>
+
+                <h2>
+                    CV Genérico
+                </h2>
+
+                <p>
+                    Una plantilla profesional y versátil para presentar
+                    tu experiencia, educación, habilidades y trayectoria
+                    profesional.
+                </p>
+
+                <ul>
+                    <li>Perfil profesional</li>
+                    <li>Experiencia laboral</li>
+                    <li>Educación y habilidades</li>
+                    <li>Diseño profesional</li>
+                </ul>
+
+                <a href="./cv-general.html" class="card-button">
+                    Crear CV
+                    <span>→</span>
+                </a>
+
+            </div>
+
+        </article>
+
+
+        <!-- CV DEVELOPER -->
+        <article class="cv-card developer-card">
+
+            <div class="card-icon developer-icon">
+                <span>&lt;/&gt;</span>
+            </div>
+
+            <div class="card-content">
+
+                <span class="card-label">
+                    Para programadores
+                </span>
+
+                <h2>
+                    CV para Developers
+                </h2>
+
+                <p>
+                    Diseñado específicamente para perfiles tecnológicos,
+                    con espacio para proyectos, tecnologías, experiencia
+                    y conocimientos técnicos.
+                </p>
+
+                <ul>
+                    <li>Stack tecnológico</li>
+                    <li>Proyectos</li>
+                    <li>Experiencia como developer</li>
+                    <li>GitHub y enlaces profesionales</li>
+                </ul>
+
+                <a href="./cv-dev.html" class="card-button orange-button">
+                    Crear CV de Developer
+                    <span>→</span>
+                </a>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <footer class="home-footer">
+        <span>CVack</span>
+        <span>•</span>
+        <span>Crea. Personaliza. Destaca.</span>
+    </footer>
+
+</main>
+
 </body>
 </html>

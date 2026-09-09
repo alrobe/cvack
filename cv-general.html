@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVack</title>
+<link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+<header class="top">
+ <div class="logo">CV<b>ack</b></div>
+ <div class="top-actions">
+  <button class="btn" id="new">Nuevo</button>
+  <button class="btn" id="import">Importar Json</button>
+  <button class="btn" id="export">Exportar Json</button>
+  <button class="btn orange" id="pdf">Descargar CV</button>
+  <input type="file" id="file" accept=".json,application/json" hidden>
+ </div>
+</header>
+
+<div class="app">
+ <div class="editor-panel">
+  <div class="editor-head">Editar CV</div>
+  <div class="editor" id="editor"></div>
+ </div>
+ <div class="preview-panel">
+  <div class="preview-head"><strong>Vista previa</strong><small>Orange Resume · A4</small></div>
+  <div class="preview-area" id="preview"></div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="js/general.js"></script>
+</body>
+</html>
