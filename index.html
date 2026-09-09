@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CV Builder</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --orange: #984733;
+    --orange-dark: #7f3928;
+    --blue: #3f73d8;
+    --bg: #f4f5f7;
+    --text: #303038;
+    --muted: #777983;
+    --border: #dddde2;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 64px;
+    background: #1d1d20;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+}
+
+.topbar h1 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.top-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.top-actions button {
+    border: 0;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    background: var(--blue);
+    color: white;
+    font-size: 20px;
+}
+
+.top-actions .secondary {
+    background: transparent;
+    border: 1px solid #666;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(400px, 560px) 1fr;
+    gap: 30px;
+    max-width: 1500px;
+    margin: auto;
+    padding: 25px;
+}
+
+.editor {
+    min-width: 0;
+}
+
+.section {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.section-header button {
+    border: 1px solid #bbb;
+    background: white;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+}
+
+.section-body {
+    padding: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.field {
+    margin-bottom: 15px;
+}
+
+.field.full {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: 600;
+    color: #555762;
+}
+
+.field input,
+.field textarea,
+.field select {
+    width: 100%;
+    border: 1px solid #dddfe5;
+    background: #f7f7f8;
+    border-radius: 8px;
+    padding: 12px;
+    outline: none;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+    border-color: var(--blue);
+    background: white;
+}
+
+.field textarea {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.add-btn {
+    border: 1px solid #aaa;
+    background: white;
+    border-radius: 24px;
+    padding: 10px 17px;
+    margin-top: 5px;
+}
+
+.item {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    background: #fff;
+}
+
+.item-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.item-title strong {
+    font-size: 17px;
+}
+
+.delete-btn {
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    color: #a33;
+}
+
+.skill-row {
+    display: grid;
+    grid-template-columns: 1fr 160px 40px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.language-row {
+    display: grid;
+    grid-template-columns: 1fr 160px 40px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.csv-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.csv-actions button {
+    border: 0;
+    padding: 11px 16px;
+    border-radius: 8px;
+    background: #333;
+    color: white;
+}
+
+.csv-actions label {
+    background: var(--blue);
+    color: white;
+    padding: 11px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.csv-actions input {
+    display: none;
+}
+
+/* PREVIEW */
+
+.preview-area {
+    position: sticky;
+    top: 89px;
+    height: calc(100vh - 110px);
+    overflow: auto;
+}
+
+.preview {
+    width: 794px;
+    min-height: 1123px;
+    margin: 0 auto 40px;
+    background: white;
+    display: grid;
+    grid-template-columns: 255px 1fr;
+    box-shadow: 0 3px 20px rgba(0,0,0,.15);
+}
+
+.preview-side {
+    background: var(--orange);
+    color: white;
+    padding: 35px 22px;
+}
+
+.preview-main {
+    padding: 38px 30px;
+}
+
+.preview-name {
+    font-size: 28px;
+    margin: 0 0 7px;
+    line-height: 1.1;
+}
+
+.preview-job {
+    color: #eee;
+    font-size: 15px;
+    margin-bottom: 28px;
+}
+
+.side-heading {
+    font-size: 18px;
+    margin: 25px 0 10px;
+    border-bottom: 1px solid rgba(255,255,255,.5);
+    padding-bottom: 5px;
+}
+
+.side-text {
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.contact-line {
+    margin: 8px 0;
+    font-size: 12px;
+    word-break: break-word;
+}
+
+.rating {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ddd;
+    display: inline-block;
+}
+
+.dot.active {
+    background: white;
+}
+
+.main-section {
+    margin-bottom: 23px;
+}
+
+.main-heading {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-heading::after {
+    content: "";
+    height: 1px;
+    background: #ddd;
+    flex: 1;
+}
+
+.profile-text {
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.preview-item {
+    display: grid;
+    grid-template-columns: 115px 1fr;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.preview-date {
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.preview-content {
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.preview-content strong {
+    font-size: 13px;
+}
+
+.preview-company {
+    color: var(--orange);
+    margin: 3px 0;
+}
+
+.preview-skill {
+    display: flex;
+    justify-content: space-between;
+    margin: 7px 0;
+    font-size: 12px;
+}
+
+@media(max-width: 1000px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-area {
+        position: static;
+        height: auto;
+    }
+
+    .preview {
+        transform-origin: top left;
+        width: 794px;
+    }
+}
+
+@media(max-width: 600px) {
+    .layout {
+        padding: 10px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .field.full {
+        grid-column: auto;
+    }
+
+    .skill-row,
+    .language-row {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-area {
+        overflow-x: auto;
+    }
+
+    .preview {
+        transform: scale(.65);
+        transform-origin: top left;
+        margin-bottom: -390px;
+    }
+}
+
+@media print {
+    body {
+        background: white;
+    }
+
+    .topbar,
+    .editor {
+        display: none !important;
+    }
+
+    .layout {
+        display: block;
+        padding: 0;
+    }
+
+    .preview-area {
+        position: static;
+        height: auto;
+        overflow: visible;
+    }
+
+    .preview {
+        margin: 0;
+        box-shadow: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <h1>CV Builder</h1>
+
+    <div class="top-actions">
+        <button class="secondary" onclick="exportCSV()" title="Exportar CSV">⇩</button>
+        <button onclick="window.print()" title="Guardar como PDF">↓</button>
+    </div>
+</header>
+
+<div class="layout">
+
+<main class="editor">
+
+<!-- DATOS PERSONALES -->
+<section class="section">
+    <div class="section-header">
+        <h2>Datos personales</h2>
+        <button onclick="toggleSection(this)">⌃</button>
+    </div>
+
+    <div class="section-body">
+        <div class="grid">
+
+            <div class="field">
+                <label>Nombre</label>
+                <input data-personal="name">
+            </div>
+
+            <div class="field">
+                <label>Apellido</label>
+                <input data-personal="lastname">
+            </div>
+
+            <div class="field full">
+                <label>Puesto deseado / titular</label>
+                <input data-personal="job">
+            </div>
+
+            <div class="field">
+                <label>Email</label>
+                <input data-personal="email" type="email">
+            </div>
+
+            <div class="field">
+                <label>Teléfono</label>
+                <input data-personal="phone">
+            </div>
+
+            <div class="field full">
+                <label>Dirección</label>
+                <input data-personal="address">
+            </div>
+
+            <div class="field">
+                <label>Código postal</label>
+                <input data-personal="postcode">
+            </div>
+
+            <div class="field">
+                <label>Ciudad</label>
+                <input data-personal="city">
+            </div>
+
+            <div class="field">
+                <label>Fecha de nacimiento</label>
+                <input data-personal="birthDate">
+            </div>
+
+            <div class="field">
+                <label>Lugar de nacimiento</label>
+                <input data-personal="birthPlace">
+            </div>
+
+            <div class="field">
+                <label>Nacionalidad</label>
+                <input data-personal="nationality">
+            </div>
+
+            <div class="field">
+                <label>Género</label>
+                <input data-personal="gender">
+            </div>
+
+            <div class="field">
+                <label>Estado civil</label>
+                <input data-personal="civilStatus">
+            </div>
+
+            <div class="field">
+                <label>Website</label>
+                <input data-personal="website">
+            </div>
+
+            <div class="field full">
+                <label>LinkedIn</label>
+                <input data-personal="linkedin">
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- PERFIL -->
+<section class="section">
+    <div class="section-header">
+        <h2>Perfil</h2>
+        <button onclick="toggleSection(this)">⌃</button>
+    </div>
+
+    <div class="section-body">
+        <div class="field">
+            <label>Descripción</label>
+            <textarea id="profile"></textarea>
+        </div>
+    </div>
+</section>
+
+
+<!-- EDUCACIÓN -->
+<section class="section">
+    <div class="section-header">
+        <h2>Educación</h2>
+        <button onclick="toggleSection(this)">⌃</button>
+    </div>
+
+    <div class="section-body">
+        <div id="educationList"></div>
+        <button class="add-btn" onclick="addEducation()">＋ Añadir formación</button>
+    </div>
+</section>
+
+
+<!-- EXPERIENCIA -->
+<section class="section">
+    <div class="section-header">
+        <h2>Experiencia laboral</h2>
+        <button onclick="toggleSection(this)">⌃</button>
+    </div>
+
+    <div class="section-body">
+        <div id="experienceList"></div>
+        <button class="add-btn" onclick="addExperience()">＋ Añadir experiencia</button>
+    </div>
+</section>
+
+
+<!-- SKILLS -->
+<section class="section">
+    <div class="section-header">
+        <h2>Skills</h2>
+        <button onclick="toggleSection(this)">⌃</button>
+    </div>
+
+    <div class="section-body">
+        <div id="skillsList"></div>
+        <button class="add-btn" onclick="addSkill()">＋ Añadir skill</button>
+    </div>
+</section>
+
+
+<!-- IDIOMAS -->
+<section class="section">
+    <div class="section-header">
+        <h2>Idiomas</h2>
+        <button onclick="toggleSection(this)">⌃</button>
+    </div>
+
+    <div class="section-body">
+        <div id="languagesList"></div>
+        <button class="add-btn" onclick="addLanguage()">＋ Añadir idioma</button>
+    </div>
+</section>
+
+
+<!-- CSV -->
+<section class="section">
+    <div class="section-header">
+        <h2>Importar / exportar</h2>
+        <button onclick="toggleSection(this)">⌃</button>
+    </div>
+
+    <div class="section-body">
+        <div class="csv-actions">
+            <button onclick="exportCSV()">Exportar CV a CSV</button>
+
+            <label>
+                Importar CSV
+                <input type="file" accept=".csv,text/csv" onchange="importCSV(event)">
+            </label>
+        </div>
+    </div>
+</section>
+
+</main>
+
+
+<!-- VISTA PREVIA -->
+<aside class="preview-area">
+
+<div class="preview">
+
+    <aside class="preview-side">
+
+        <h1 class="preview-name" id="pvName">
+            Tu nombre
+        </h1>
+
+        <div class="preview-job" id="pvJob">
+            Puesto deseado
+        </div>
+
+        <div class="side-heading">Personal details</div>
+
+        <div id="pvContact"></div>
+
+        <div class="side-heading">Skills</div>
+        <div id="pvSkills"></div>
+
+        <div class="side-heading">Languages</div>
+        <div id="pvLanguages"></div>
+
+    </aside>
+
+
+    <main class="preview-main">
+
+        <section class="main-section">
+            <h2 class="main-heading">Profile</h2>
+            <div class="profile-text" id="pvProfile">
+                Tu perfil profesional aparecerá aquí.
+            </div>
+        </section>
+
+
+        <section class="main-section">
+            <h2 class="main-heading">Education</h2>
+            <div id="pvEducation"></div>
+        </section>
+
+
+        <section class="main-section">
+            <h2 class="main-heading">Employment</h2>
+            <div id="pvExperience"></div>
+        </section>
+
+    </main>
+
+</div>
+
+</aside>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   MODELO
+========================================================= */
+
+const cv = {
+    personal: {
+        name: "",
+        lastname: "",
+        job: "",
+        email: "",
+        phone: "",
+        address: "",
+        postcode: "",
+        city: "",
+        birthDate: "",
+        birthPlace: "",
+        nationality: "",
+        gender: "",
+        civilStatus: "",
+        website: "",
+        linkedin: ""
+    },
+
+    profile: "",
+
+    education: [],
+
+    experience: [],
+
+    skills: [],
+
+    languages: []
+};
+
+
+/* =========================================================
+   UTILIDADES
+========================================================= */
+
+function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function save() {
+    localStorage.setItem("cv-builder-data", JSON.stringify(cv));
+}
+
+function load() {
+    const saved = localStorage.getItem("cv-builder-data");
+
+    if (!saved) return;
+
+    try {
+        const data = JSON.parse(saved);
+
+        Object.assign(cv.personal, data.personal || {});
+
+        cv.profile = data.profile || "";
+        cv.education = data.education || [];
+        cv.experience = data.experience || [];
+        cv.skills = data.skills || [];
+        cv.languages = data.languages || [];
+
+    } catch (error) {
+        console.error("No se pudo cargar el CV", error);
+    }
+}
+
+
+/* =========================================================
+   DATOS PERSONALES
+   ESTE ES EL PUNTO IMPORTANTE:
+   TODOS LOS INPUTS ESTÁN CONECTADOS A cv.personal
+========================================================= */
+
+function bindPersonalInputs() {
+
+    document.querySelectorAll("[data-personal]").forEach(input => {
+
+        const key = input.dataset.personal;
+
+        input.value = cv.personal[key] || "";
+
+        input.addEventListener("input", function() {
+
+            cv.personal[key] = this.value;
+
+            save();
+
+            /*
+             * ACTUALIZACIÓN INMEDIATA
+             * mientras el usuario escribe.
+             */
+            renderPreview();
+
+        });
+
+    });
+}
+
+
+/* =========================================================
+   PERFIL
+========================================================= */
+
+const profileInput = document.getElementById("profile");
+
+profileInput.addEventListener("input", function() {
+
+    cv.profile = this.value;
+
+    save();
+
+    renderPreview();
+
+});
+
+
+/* =========================================================
+   EDUCACIÓN
+========================================================= */
+
+function addEducation(data = {}) {
+
+    cv.education.push({
+        id: uid(),
+        title: data.title || "",
+        institution: data.institution || "",
+        start: data.start || "",
+        end: data.end || ""
+    });
+
+    renderEducationEditor();
+    renderPreview();
+    save();
+}
+
+
+function removeEducation(id) {
+
+    cv.education = cv.education.filter(x => x.id !== id);
+
+    renderEducationEditor();
+    renderPreview();
+    save();
+}
+
+
+function renderEducationEditor() {
+
+    const container = document.getElementById("educationList");
+
+    container.innerHTML = "";
+
+    cv.education.forEach(item => {
+
+        const div = document.createElement("div");
+
+        div.className = "item";
+
+        div.innerHTML = `
+            <div class="item-title">
+                <strong>Formación</strong>
+                <button class="delete-btn" onclick="removeEducation('${item.id}')">×</button>
+            </div>
+
+            <div class="grid">
+
+                <div class="field">
+                    <label>Título</label>
+                    <input value="${escapeHTML(item.title)}"
+                        oninput="updateEducation('${item.id}','title',this.value)">
+                </div>
+
+                <div class="field">
+                    <label>Institución</label>
+                    <input value="${escapeHTML(item.institution)}"
+                        oninput="updateEducation('${item.id}','institution',this.value)">
+                </div>
+
+                <div class="field">
+                    <label>Desde</label>
+                    <input value="${escapeHTML(item.start)}"
+                        oninput="updateEducation('${item.id}','start',this.value)">
+                </div>
+
+                <div class="field">
+                    <label>Hasta</label>
+                    <input value="${escapeHTML(item.end)}"
+                        oninput="updateEducation('${item.id}','end',this.value)">
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+
+function updateEducation(id, key, value) {
+
+    const item = cv.education.find(x => x.id === id);
+
+    if (!item) return;
+
+    item[key] = value;
+
+    save();
+
+    renderPreview();
+}
+
+
+/* =========================================================
+   EXPERIENCIA
+========================================================= */
+
+function addExperience(data = {}) {
+
+    cv.experience.push({
+        id: uid(),
+        position: data.position || "",
+        company: data.company || "",
+        start: data.start || "",
+        end: data.end || "",
+        description: data.description || ""
+    });
+
+    renderExperienceEditor();
+    renderPreview();
+    save();
+}
+
+
+function removeExperience(id) {
+
+    cv.experience = cv.experience.filter(x => x.id !== id);
+
+    renderExperienceEditor();
+    renderPreview();
+    save();
+}
+
+
+function renderExperienceEditor() {
+
+    const container = document.getElementById("experienceList");
+
+    container.innerHTML = "";
+
+    cv.experience.forEach(item => {
+
+        const div = document.createElement("div");
+
+        div.className = "item";
+
+        div.innerHTML = `
+            <div class="item-title">
+                <strong>Experiencia</strong>
+                <button class="delete-btn" onclick="removeExperience('${item.id}')">×</button>
+            </div>
+
+            <div class="grid">
+
+                <div class="field">
+                    <label>Puesto</label>
+                    <input value="${escapeHTML(item.position)}"
+                        oninput="updateExperience('${item.id}','position',this.value)">
+                </div>
+
+                <div class="field">
+                    <label>Empresa</label>
+                    <input value="${escapeHTML(item.company)}"
+                        oninput="updateExperience('${item.id}','company',this.value)">
+                </div>
+
+                <div class="field">
+                    <label>Desde</label>
+                    <input value="${escapeHTML(item.start)}"
+                        oninput="updateExperience('${item.id}','start',this.value)">
+                </div>
+
+                <div class="field">
+                    <label>Hasta</label>
+                    <input value="${escapeHTML(item.end)}"
+                        oninput="updateExperience('${item.id}','end',this.value)">
+                </div>
+
+                <div class="field full">
+                    <label>Descripción</label>
+                    <textarea
+                        oninput="updateExperience('${item.id}','description',this.value)"
+                    >${escapeHTML(item.description)}</textarea>
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+
+function updateExperience(id, key, value) {
+
+    const item = cv.experience.find(x => x.id === id);
+
+    if (!item) return;
+
+    item[key] = value;
+
+    save();
+
+    renderPreview();
+}
+
+
+/* =========================================================
+   SKILLS
+========================================================= */
+
+function addSkill(data = {}) {
+
+    cv.skills.push({
+        id: uid(),
+        name: data.name || "",
+        level: Number(data.level || 3)
+    });
+
+    renderSkillsEditor();
+    renderPreview();
+    save();
+}
+
+
+function removeSkill(id) {
+
+    cv.skills = cv.skills.filter(x => x.id !== id);
+
+    renderSkillsEditor();
+    renderPreview();
+    save();
+}
+
+
+function renderSkillsEditor() {
+
+    const container = document.getElementById("skillsList");
+
+    container.innerHTML = "";
+
+    cv.skills.forEach(item => {
+
+        const div = document.createElement("div");
+
+        div.className = "skill-row";
+
+        div.innerHTML = `
+            <input
+                placeholder="Skill"
+                value="${escapeHTML(item.name)}"
+                oninput="updateSkill('${item.id}','name',this.value)"
+            >
+
+            <select onchange="updateSkill('${item.id}','level',this.value)">
+                <option value="1" ${item.level == 1 ? "selected" : ""}>Beginner</option>
+                <option value="2" ${item.level == 2 ? "selected" : ""}>Moderate</option>
+                <option value="3" ${item.level == 3 ? "selected" : ""}>Good</option>
+                <option value="4" ${item.level == 4 ? "selected" : ""}>Very good</option>
+                <option value="5" ${item.level == 5 ? "selected" : ""}>Excellent</option>
+            </select>
+
+            <button class="delete-btn"
+                onclick="removeSkill('${item.id}')">×</button>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+
+function updateSkill(id, key, value) {
+
+    const item = cv.skills.find(x => x.id === id);
+
+    if (!item) return;
+
+    item[key] = key === "level" ? Number(value) : value;
+
+    save();
+
+    renderPreview();
+}
+
+
+/* =========================================================
+   IDIOMAS
+========================================================= */
+
+function addLanguage(data = {}) {
+
+    cv.languages.push({
+        id: uid(),
+        language: data.language || "",
+        level: data.level || "B2"
+    });
+
+    renderLanguagesEditor();
+    renderPreview();
+    save();
+}
+
+
+function removeLanguage(id) {
+
+    cv.languages = cv.languages.filter(x => x.id !== id);
+
+    renderLanguagesEditor();
+    renderPreview();
+    save();
+}
+
+
+function renderLanguagesEditor() {
+
+    const container = document.getElementById("languagesList");
+
+    container.innerHTML = "";
+
+    cv.languages.forEach(item => {
+
+        const div = document.createElement("div");
+
+        div.className = "language-row";
+
+        div.innerHTML = `
+            <input
+                placeholder="Idioma"
+                value="${escapeHTML(item.language)}"
+                oninput="updateLanguage('${item.id}','language',this.value)"
+            >
+
+            <select onchange="updateLanguage('${item.id}','level',this.value)">
+
+                <option value="A1" ${item.level === "A1" ? "selected" : ""}>A1</option>
+                <option value="A2" ${item.level === "A2" ? "selected" : ""}>A2</option>
+                <option value="B1" ${item.level === "B1" ? "selected" : ""}>B1</option>
+                <option value="B2" ${item.level === "B2" ? "selected" : ""}>B2</option>
+                <option value="C1" ${item.level === "C1" ? "selected" : ""}>C1</option>
+                <option value="C2" ${item.level === "C2" ? "selected" : ""}>C2</option>
+
+            </select>
+
+            <button class="delete-btn"
+                onclick="removeLanguage('${item.id}')">×</button>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+
+function updateLanguage(id, key, value) {
+
+    const item = cv.languages.find(x => x.id === id);
+
+    if (!item) return;
+
+    item[key] = value;
+
+    save();
+
+    renderPreview();
+}
+
+
+/* =========================================================
+   VISTA PREVIA
+========================================================= */
+
+function ratingHTML(level) {
+
+    let html = `<span class="rating">`;
+
+    for (let i = 1; i <= 5; i++) {
+
+        html += `
+            <span class="dot ${i <= level ? "active" : ""}"></span>
+        `;
+    }
+
+    html += `</span>`;
+
+    return html;
+}
+
+
+function renderPreview() {
+
+    const p = cv.personal;
+
+    /*
+     * NOMBRE
+     */
+    const fullName =
+        [p.name, p.lastname]
+        .filter(Boolean)
+        .join(" ");
+
+    document.getElementById("pvName").textContent =
+        fullName || "Tu nombre";
+
+
+    /*
+     * PUESTO
+     */
+    document.getElementById("pvJob").textContent =
+        p.job || "Puesto deseado";
+
+
+    /*
+     * CONTACTO
+     */
+    const contact = [];
+
+    if (p.email)
+        contact.push(`✉ ${escapeHTML(p.email)}`);
+
+    if (p.phone)
+        contact.push(`☎ ${escapeHTML(p.phone)}`);
+
+    if (p.address)
+        contact.push(`⌂ ${escapeHTML(p.address)}`);
+
+    if (p.city)
+        contact.push(`⌖ ${escapeHTML(p.city)}`);
+
+    if (p.linkedin)
+        contact.push(`in ${escapeHTML(p.linkedin)}`);
+
+    document.getElementById("pvContact").innerHTML =
+        contact.map(x => `<div class="contact-line">${x}</div>`).join("");
+
+
+    /*
+     * PERFIL
+     */
+    document.getElementById("pvProfile").innerHTML =
+        escapeHTML(pvText(cv.profile));
+
+
+    /*
+     * EDUCACIÓN
+     */
+    document.getElementById("pvEducation").innerHTML =
+        cv.education.map(item => `
+
+            <div class="preview-item">
+
+                <div class="preview-date">
+                    ${escapeHTML(item.start)}
+                    ${item.start || item.end ? " - " : ""}
+                    ${escapeHTML(item.end)}
+                </div>
+
+                <div class="preview-content">
+
+                    <strong>
+                        ${escapeHTML(item.title || "Formación")}
+                    </strong>
+
+                    <div class="preview-company">
+                        ${escapeHTML(item.institution)}
+                    </div>
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+
+    /*
+     * EXPERIENCIA
+     */
+    document.getElementById("pvExperience").innerHTML =
+        cv.experience.map(item => `
+
+            <div class="preview-item">
+
+                <div class="preview-date">
+                    ${escapeHTML(item.start)}
+                    ${item.start || item.end ? " - " : ""}
+                    ${escapeHTML(item.end)}
+                </div>
+
+                <div class="preview-content">
+
+                    <strong>
+                        ${escapeHTML(item.position || "Puesto")}
+                    </strong>
+
+                    <div class="preview-company">
+                        ${escapeHTML(item.company)}
+                    </div>
+
+                    <div>
+                        ${escapeHTML(item.description)}
+                    </div>
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+
+    /*
+     * SKILLS
+     */
+    document.getElementById("pvSkills").innerHTML =
+        cv.skills.map(item => `
+
+            <div class="preview-skill">
+
+                <span>${escapeHTML(item.name)}</span>
+
+                ${ratingHTML(item.level)}
+
+            </div>
+
+        `).join("");
+
+
+    /*
+     * IDIOMAS
+     */
+    document.getElementById("pvLanguages").innerHTML =
+        cv.languages.map(item => `
+
+            <div class="preview-skill">
+
+                <span>${escapeHTML(item.language)}</span>
+
+                <span>${escapeHTML(item.level)}</span>
+
+            </div>
+
+        `).join("");
+}
+
+
+function pvText(text) {
+
+    if (!text) {
+        return "Tu perfil profesional aparecerá aquí.";
+    }
+
+    return text.replace(/\n/g, "<br>");
+}
+
+
+/* =========================================================
+   SECCIONES
+========================================================= */
+
+function toggleSection(button) {
+
+    const section = button.closest(".section");
+    const body = section.querySelector(".section-body");
+
+    if (!body) return;
+
+    const hidden = body.style.display === "none";
+
+    body.style.display = hidden ? "" : "none";
+
+    button.textContent = hidden ? "⌃" : "⌄";
+}
+
+
+/* =========================================================
+   CSV
+========================================================= */
+
+function csvEscape(value) {
+
+    value = String(value ?? "");
+
+    if (
+        value.includes(",") ||
+        value.includes('"') ||
+        value.includes("\n")
+    ) {
+        return '"' + value.replaceAll('"', '""') + '"';
+    }
+
+    return value;
+}
+
+
+function exportCSV() {
+
+    const rows = [
+        ["type","id","field","value"]
+    ];
+
+
+    /*
+     * PERSONAL
+     */
+    Object.entries(cv.personal).forEach(([field,value]) => {
+
+        rows.push([
+            "personal",
+            "",
+            field,
+            value
+        ]);
+
+    });
+
+
+    /*
+     * PROFILE
+     */
+    rows.push([
+        "profile",
+        "",
+        "description",
+        cv.profile
+    ]);
+
+
+    /*
+     * EDUCATION
+     */
+    cv.education.forEach(item => {
+
+        Object.entries(item).forEach(([field,value]) => {
+
+            if (field === "id") return;
+
+            rows.push([
+                "education",
+                item.id,
+                field,
+                value
+            ]);
+
+        });
+
+    });
+
+
+    /*
+     * EXPERIENCE
+     */
+    cv.experience.forEach(item => {
+
+        Object.entries(item).forEach(([field,value]) => {
+
+            if (field === "id") return;
+
+            rows.push([
+                "experience",
+                item.id,
+                field,
+                value
+            ]);
+
+        });
+
+    });
+
+
+    /*
+     * SKILLS
+     */
+    cv.skills.forEach(item => {
+
+        Object.entries(item).forEach(([field,value]) => {
+
+            if (field === "id") return;
+
+            rows.push([
+                "skill",
+                item.id,
+                field,
+                value
+            ]);
+
+        });
+
+    });
+
+
+    /*
+     * LANGUAGES
+     */
+    cv.languages.forEach(item => {
+
+        Object.entries(item).forEach(([field,value]) => {
+
+            if (field === "id") return;
+
+            rows.push([
+                "language",
+                item.id,
+                field,
+                value
+            ]);
+
+        });
+
+    });
+
+
+    const csv = rows
+        .map(row => row.map(csvEscape).join(","))
+        .join("\n");
+
+
+    const blob = new Blob(
+        [csv],
+        { type: "text/csv;charset=utf-8" }
+    );
+
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "mi-cv.csv";
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    URL.revokeObjectURL(url);
+}
+
+
+/* =========================================================
+   IMPORTAR CSV
+========================================================= */
+
+function parseCSV(text) {
+
+    const rows = [];
+
+    let row = [];
+    let value = "";
+    let insideQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"' && insideQuotes && next === '"') {
+
+            value += '"';
+            i++;
+
+        } else if (char === '"') {
+
+            insideQuotes = !insideQuotes;
+
+        } else if (char === "," && !insideQuotes) {
+
+            row.push(value);
+            value = "";
+
+        } else if (
+            (char === "\n" || char === "\r") &&
+            !insideQuotes
+        ) {
+
+            if (char === "\r" && next === "\n") {
+                i++;
+            }
+
+            row.push(value);
+
+            rows.push(row);
+
+            row = [];
+            value = "";
+
+        } else {
+
+            value += char;
+        }
+    }
+
+    if (value.length || row.length) {
+
+        row.push(value);
+        rows.push(row);
+    }
+
+    return rows;
+}
+
+
+function importCSV(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+
+        try {
+
+            const rows = parseCSV(e.target.result);
+
+            if (rows.length < 2) {
+                alert("El CSV está vacío.");
+                return;
+            }
+
+
+            /*
+             * Reiniciamos.
+             */
+            cv.personal = {
+                name: "",
+                lastname: "",
+                job: "",
+                email: "",
+                phone: "",
+                address: "",
+                postcode: "",
+                city: "",
+                birthDate: "",
+                birthPlace: "",
+                nationality: "",
+                gender: "",
+                civilStatus: "",
+                website: "",
+                linkedin: ""
+            };
+
+            cv.profile = "";
+            cv.education = [];
+            cv.experience = [];
+            cv.skills = [];
+            cv.languages = [];
+
+
+            const map = new Map();
+
+
+            for (let i = 1; i < rows.length; i++) {
+
+                const [
+                    type,
+                    id,
+                    field,
+                    value
+                ] = rows[i];
+
+
+                if (!type) continue;
+
+
+                if (type === "personal") {
+
+                    cv.personal[field] = value || "";
+
+                }
+
+                else if (type === "profile") {
+
+                    cv.profile = value || "";
+
+                }
+
+                else {
+
+                    const key =
+                        type + ":" + (id || "new");
+
+
+                    if (!map.has(key)) {
+
+                        map.set(key, {
+                            type,
+                            id: id || uid()
+                        });
+
+                    }
+
+                    map.get(key)[field] = value || "";
+                }
+            }
+
+
+            /*
+             * Reconstruimos arrays.
+             */
+            for (const item of map.values()) {
+
+                if (item.type === "education") {
+
+                    cv.education.push({
+                        id: item.id,
+                        title: item.title || "",
+                        institution: item.institution || "",
+                        start: item.start || "",
+                        end: item.end || ""
+                    });
+
+                }
+
+                if (item.type === "experience") {
+
+                    cv.experience.push({
+                        id: item.id,
+                        position: item.position || "",
+                        company: item.company || "",
+                        start: item.start || "",
+                        end: item.end || "",
+                        description: item.description || ""
+                    });
+
+                }
+
+                if (item.type === "skill") {
+
+                    cv.skills.push({
+                        id: item.id,
+                        name: item.name || "",
+                        level: Number(item.level || 3)
+                    });
+
+                }
+
+                if (item.type === "language") {
+
+                    cv.languages.push({
+                        id: item.id,
+                        language: item.language || "",
+                        level: item.level || "B2"
+                    });
+
+                }
+            }
+
+
+            /*
+             * Actualizamos TODO.
+             */
+            bindPersonalInputs();
+
+            profileInput.value = cv.profile;
+
+            renderEducationEditor();
+            renderExperienceEditor();
+            renderSkillsEditor();
+            renderLanguagesEditor();
+
+            renderPreview();
+
+            save();
+
+            alert("CV importado correctamente.");
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("No se pudo importar el CSV.");
+
+        }
+    };
+
+    reader.readAsText(file);
+}
+
+
+/* =========================================================
+   INICIALIZACIÓN
+========================================================= */
+
+load();
+
+bindPersonalInputs();
+
+profileInput.value = cv.profile;
+
+renderEducationEditor();
+renderExperienceEditor();
+renderSkillsEditor();
+renderLanguagesEditor();
+
+renderPreview();
+
+
+/*
+ * Si todavía no hay datos, agregamos ejemplos.
+ * Puedes eliminarlos si quieres comenzar vacío.
+ */
+if (
+    cv.education.length === 0 &&
+    cv.experience.length === 0 &&
+    cv.skills.length === 0 &&
+    cv.languages.length === 0
+) {
+
+    addEducation({
+        title: "Ingeniería de Sistemas",
+        institution: "Universidad",
+        start: "2015",
+        end: "2019"
+    });
+
+    addExperience({
+        position: "Software Developer",
+        company: "Empresa",
+        start: "2021",
+        end: "Present",
+        description: "Desarrollo y mantenimiento de aplicaciones de software."
+    });
+
+    addSkill({
+        name: "Java",
+        level: 4
+    });
+
+    addSkill({
+        name: "Python",
+        level: 5
+    });
+
+    addSkill({
+        name: "SQL",
+        level: 4
+    });
+
+    addLanguage({
+        language: "English",
+        level: "B2"
+    });
+
+    addLanguage({
+        language: "Spanish",
+        level: "C2"
+    });
+}
+
+</script>
+
+</body>
+</html>
