@@ -1,24 +1,31 @@
-# CV Builder — Orange Resume
+# CVack — CV Builder
 
 A lightweight CV/resume builder built with vanilla HTML, CSS, and JavaScript.
 
-The application allows users to create, edit, preview, save, import, and export professional CV data directly in the browser.
+CVack allows users to create, edit, preview, save, import, and export professional CV data directly in the browser.
+
+The application requires no backend and no external dependencies.
 
 ## Features
 
 * Personal details editor
-* Professional profile / summary
+* Professional description
 * Education history
 * Employment history
+* Technologies
+* Tools
+* Frameworks
+* Version control
+* Project management
+* Projects
 * Skills with proficiency levels
 * Languages with proficiency levels
-* Hobbies
 * Profile photo upload
 * Live CV preview
 * A4 resume layout
 * Local browser storage
-* CSV export
-* CSV import
+* JSON export
+* JSON import
 * Print / Save as PDF
 * Responsive layout
 * No backend required
@@ -27,21 +34,41 @@ The application allows users to create, edit, preview, save, import, and export 
 ## Project Structure
 
 ```text
-cv-builder/
+cvack/
+
 ├── index.html
+├── cv-general.html
+├── cv-dev.html
 ├── README.md
 │
 ├── css/
+│   ├── home.css
 │   └── styles.css
 │
 └── js/
-    ├── app.js
-    ├── state.js
-    ├── editor.js
-    ├── preview.js
-    ├── storage.js
-    └── csv.js
+    ├── script.js
+    └── general.js
 ```
+
+## CV Types
+
+CVack provides a home page where users can choose the type of CV they want to create.
+
+### General CV
+
+The general CV is designed for users who need a standard professional resume.
+
+### Developer CV
+
+The developer CV includes additional fields specifically useful for software development experience, including:
+
+* Technologies
+* Tools
+* Framework
+* Version control
+* Project management
+* Project
+* Description / achievements
 
 ## Requirements
 
@@ -61,17 +88,11 @@ No Node.js installation is required.
 
 ## Important: Run Through a Local Server
 
-This project uses JavaScript ES Modules:
+The application should be opened through a local web server.
 
-```html
-<script type="module" src="./js/app.js"></script>
-```
+Do **not** open the HTML files directly with a double-click.
 
-Because of this, the application should be opened through a local web server.
-
-Do **not** open `index.html` directly with a double-click.
-
-Opening the project using a `file://` URL may prevent the JavaScript modules from loading correctly.
+Opening the project using a `file://` URL can cause browser restrictions and prevent some JavaScript functionality from working correctly.
 
 ## Start the Application
 
@@ -82,7 +103,7 @@ Navigate to the project directory.
 Example:
 
 ```bash
-cd path/to/cv-builder
+cd path/to/cvack
 ```
 
 ### 2. Start the Python development server
@@ -107,7 +128,9 @@ Open your browser and visit:
 http://localhost:8000
 ```
 
-The CV Builder should now load.
+The CVack home page should now load.
+
+From there, select the desired CV type.
 
 ## Stop the Server
 
@@ -121,79 +144,180 @@ Ctrl + C
 
 ### Create a CV
 
-Fill in the sections available in the editor:
+From the home page, select the desired CV type.
 
-* Personal Details
-* Profile
-* Education
-* Employment
+The developer CV editor contains the following sections:
+
+* Personal details
 * Skills
+* Employment
+* Education
 * Languages
-* Hobbies
 
-Changes are reflected in the CV preview.
+The personal details section includes:
 
-### Add Education
+* Name
+* Last name
+* Desired position
+* Email
+* Phone
+* LinkedIn
+* Website
+* Description
+* Profile photo
+
+Changes are reflected immediately in the CV preview.
+
+## Personal Details
+
+The personal information section allows you to enter your main contact and professional information.
+
+Available fields:
+
+* Name
+* Last name
+* Desired position
+* Email
+* Phone
+* LinkedIn
+* Website
+* Description
+* Profile photo
+
+The description is displayed in the CV preview under the **Profile** section.
+
+## Add Education
 
 Click:
 
 ```text
-+ Add Education
+＋ Añadir formación
 ```
 
-You can add multiple education entries and reorder them.
+You can add multiple education entries.
 
-### Add Employment
+Each education entry contains:
+
+* Title / education
+* Institution
+* Start date
+* End date
+* Description
+
+Education entries can be reordered or removed.
+
+## Add Employment
 
 Click:
 
 ```text
-+ Add Employment
+＋ Añadir experiencia
 ```
 
 You can add multiple employment entries and reorder them.
 
-### Add Skills
+Each employment entry contains:
+
+* Position
+* Company / client
+* Start date
+* End date
+* Technologies
+* Tools
+* Framework
+* Version control
+* Project management
+* Project
+* Description / achievements
+
+This structure is especially useful for documenting software development experience.
+
+## Add Skills
 
 Click:
 
 ```text
-+ Add Skill
+＋ Añadir skill
 ```
 
-Each skill can have a proficiency level:
+Each skill can have a proficiency level.
+
+Available levels:
 
 * Beginner
-* Basic
-* Intermediate
-* Advanced
-* Expert
+* Moderate
+* Good
+* Very good
+* Excellent
 
-### Add Languages
+Skills are displayed in the CV preview with a visual proficiency indicator.
+
+## Add Languages
 
 Click:
 
 ```text
-+ Add Language
+＋ Añadir idioma
 ```
 
-Available language levels:
+Available language levels include:
 
+* Beginner
+* Moderate
+* Good
+* Very good
+* Fluent
 * A1
 * A2
 * B1
 * B2
 * C1
 * C2
-* Native
 
-### Add Hobbies
+Languages are displayed in the CV preview together with their selected level.
+
+## Profile Photo
+
+The application supports an optional profile photo.
 
 Click:
 
 ```text
-+ Add Hobby
+Añadir foto
 ```
+
+Select an image from your computer.
+
+The image is converted to a data URL and stored locally with the CV data.
+
+You can remove the photo at any time using:
+
+```text
+Eliminar
+```
+
+## Live Preview
+
+The CV preview updates automatically whenever information is changed.
+
+The preview uses an A4-style resume layout containing:
+
+### Sidebar
+
+* Profile photo
+* Name
+* Desired position
+* Personal details
+* Skills
+* Languages
+
+### Main content
+
+* Profile
+* Employment
+* Education
+
+The editor uses **Description** as the field name, while the generated CV displays this information under the **Profile** heading.
 
 ## Local Storage
 
@@ -205,93 +329,115 @@ The storage key is:
 orange-cv
 ```
 
-This means your CV data can remain available when you close and reopen the browser.
+This allows the current CV to remain available when the browser is closed and reopened.
 
 ### Important
 
 Local storage belongs to the specific browser and device being used.
 
-If you clear browser storage, the saved CV data may be deleted.
+If browser storage is cleared, the saved CV data may be deleted.
 
-For backup purposes, use:
+For backup purposes, use the application's:
 
 ```text
-Export CSV
+Export JSON
 ```
 
-## CSV Export
+function.
+
+## JSON Export
+
+The application can export the complete CV data as a JSON file.
 
 Click:
 
 ```text
-Export CSV
+Export
 ```
 
-The application generates:
+The generated file contains the CV data, including:
 
-```text
-cv-data.csv
-```
-
-The CSV contains the CV information for:
-
-* Personal details
-* Profile
+* Personal information
+* Description
 * Education
 * Employment
+* Technologies
+* Tools
+* Framework
+* Version control
+* Project management
+* Project
 * Skills
 * Languages
-* Hobbies
+* Profile photo
 
-## CSV Import
+The filename is generated using the person's name and the current date.
+
+Example:
+
+```text
+RESUME_John_Doe-09092026.json
+```
+
+## JSON Import
 
 Click:
 
 ```text
-Import CSV
+Import
 ```
 
-Select a previously exported CSV file.
+Select a previously exported JSON file.
 
-The application will load the data and update the editor and preview.
+The application validates the imported data and updates:
 
-The expected CSV structure uses the following columns:
+* The editor
+* The CV preview
+* Local browser storage
 
-```text
-section
-name
-headline
-headline2
-email
-phone
-address
-postcode
-city
-website
-linkedin
-dob
-birthPlace
-license
-gender
-nationality
-civilStatus
-photo
-description
-title
-organization
-startDate
-endDate
-technologies
-tools
-versionControl
-projectManagement
-skill
-level
-language
-hobby
+For best compatibility, use a JSON file generated by CVack's own export function.
+
+## JSON Data Structure
+
+The general structure of the CV data is:
+
+```json
+{
+  "personal": {
+    "name": "",
+    "lastname": "",
+    "headline2": "",
+    "email": "",
+    "phone": "",
+    "linkedin": "",
+    "website": "",
+    "description": "",
+    "photo": ""
+  },
+  "education": [],
+  "employment": [],
+  "skills": [],
+  "languages": []
+}
 ```
 
-For best compatibility, use a CSV file generated by the application's own `Export CSV` function.
+An employment entry contains:
+
+```json
+{
+  "title": "",
+  "organization": "",
+  "startDate": "",
+  "endDate": "",
+  "technologies": "",
+  "tools": "",
+  "framework": "",
+  "versionControl": "",
+  "projectManagement": "",
+  "project": "",
+  "description": ""
+}
+```
 
 ## Download the CV as PDF
 
@@ -316,7 +462,19 @@ For the best result:
 * Scale: 100%
 * Background graphics: Enabled
 
-The application includes print-specific CSS to hide the editor and navigation controls.
+The application uses print-specific CSS to hide the editor and navigation controls.
+
+## New CV
+
+To start a new CV, click:
+
+```text
+New
+```
+
+The application will ask for confirmation before replacing the current CV.
+
+The current CV data should be exported first if you want to keep a backup.
 
 ## Development
 
@@ -325,7 +483,7 @@ This project uses native browser technologies:
 ```text
 HTML
 CSS
-JavaScript ES Modules
+JavaScript
 localStorage
 FileReader API
 Blob API
@@ -338,99 +496,82 @@ There is no bundler.
 
 There are no npm dependencies.
 
-## JavaScript Module Responsibilities
+## JavaScript Responsibilities
 
-### `app.js`
+### `script.js`
 
-Main application entry point.
+Handles the developer CV editor and application logic.
 
-Responsibilities:
+Responsibilities include:
 
-* Initialize the application
-* Connect DOM elements
-* Load CV data
+* Define the CV data structure
+* Load saved CV data
 * Render the editor
-* Render the preview
-* Handle New CV
-* Handle CSV import
-* Handle CSV export
-* Handle PDF printing
-* Display notifications
-
-### `state.js`
-
-Defines the CV data structure and default values.
-
-Responsibilities:
-
-* Create empty CV objects
-* Create education items
-* Create employment items
-* Create skill items
-* Create language items
-* Create hobby items
-* Define skill levels
-* Define language levels
-
-### `editor.js`
-
-Generates and manages the CV editor.
-
-Responsibilities:
-
-* Render form fields
-* Render sections
-* Render repeating items
-* Handle user input
-* Add items
-* Remove items
+* Render the CV preview
+* Handle personal information
+* Handle education
+* Handle employment
+* Handle skills
+* Handle languages
+* Add and remove items
 * Reorder items
 * Handle photo uploads
 * Handle collapsed sections
+* Save data to local storage
+* Import JSON
+* Export JSON
+* Generate the PDF filename
+* Trigger browser printing
 
-### `preview.js`
+### `general.js`
 
-Generates the A4 CV preview.
+Handles the general CV editor.
 
-Responsibilities:
+Responsibilities may include:
 
-* Render personal information
-* Render profile
-* Render employment history
-* Render education
-* Render skills
-* Render languages
-* Render hobbies
-* Render profile photo
-* Generate links for websites and LinkedIn
+* General CV data structure
+* Personal information
+* Education
+* Employment
+* Skills
+* Languages
+* CV preview
+* JSON import/export
+* Local storage
 
-### `storage.js`
+### `styles.css`
 
-Handles browser persistence.
+Contains the styles for the CV editor and developer CV preview.
 
-Responsibilities:
+Responsibilities include:
 
-* Save CV data
-* Load CV data
-* Validate stored data
-* Normalize stored data
-* Clear stored data
+* Editor layout
+* Form fields
+* Buttons
+* CV sections
+* A4 paper layout
+* Sidebar
+* Main CV content
+* Skills indicators
+* Responsive behavior
+* Print styles
 
-### `csv.js`
+### `home.css`
 
-Handles CSV import and export.
+Contains the styles for the CVack home page.
 
-Responsibilities:
+Responsibilities include:
 
-* Generate CSV files
-* Parse CSV files
-* Escape CSV values
-* Import CV information
-* Export CV information
+* Home page layout
+* CV type selector
+* General CV card
+* Developer CV card
+* Header
+* Responsive behavior
 
 ## Troubleshooting
 
-### The page loads but the editor is empty
+### The page does not load correctly
 
 First verify that you are running the project through a local server.
 
@@ -446,10 +587,10 @@ Then open:
 http://localhost:8000
 ```
 
-Do not open:
+Do not open the project directly using:
 
 ```text
-file:///path/to/cv-builder/index.html
+file:///path/to/cvack/index.html
 ```
 
 ### JavaScript is not working
@@ -464,108 +605,88 @@ F12 → Console
 
 Look for errors displayed in red.
 
-Common errors include:
+Common problems include:
 
 ```text
-Failed to load module script
+Uncaught ReferenceError
 ```
-
-or:
 
 ```text
-Failed to resolve module specifier
+Uncaught TypeError
 ```
-
-or:
 
 ```text
-The requested module does not provide an export
+Failed to load resource
 ```
 
-These usually indicate an incorrect file path, missing JavaScript file, or mismatch between module exports and imports.
+These usually indicate a JavaScript error, incorrect file path, missing file, or incorrect DOM element ID.
 
 ### CSS is not loading
 
-Verify that `index.html` contains:
+Verify that the HTML file contains the correct stylesheet reference.
+
+For the developer CV:
 
 ```html
 <link rel="stylesheet" href="./css/styles.css">
 ```
 
-Also verify that the file exists at:
+For the home page:
+
+```html
+<link rel="stylesheet" href="./css/home.css">
+```
+
+Also verify that the files exist in:
 
 ```text
 css/styles.css
-```
-
-### JavaScript is not loading
-
-Verify that `index.html` contains:
-
-```html
-<script type="module" src="./js/app.js"></script>
-```
-
-Also verify that these files exist:
-
-```text
-js/app.js
-js/state.js
-js/editor.js
-js/preview.js
-js/storage.js
-js/csv.js
+css/home.css
 ```
 
 ### The preview is empty
 
 Check the browser console first.
 
-The preview depends on:
+The preview depends on the JavaScript responsible for rendering the CV.
+
+An error in the editor or preview logic can prevent the CV from rendering correctly.
+
+Also verify that the preview container exists in the HTML.
+
+### Imported JSON does not work
+
+Make sure the selected file is valid JSON.
+
+For best compatibility, use a JSON file generated by the application's own **Export** function.
+
+If the JSON was created with an older version of CVack, some fields may not exist in the imported data.
+
+### Old CV data is appearing
+
+CVack uses:
 
 ```text
-app.js
-preview.js
-state.js
+orange-cv
 ```
 
-An error in any of these modules can prevent the preview from rendering.
+as its local storage key.
 
-### Imported CSV does not work
+If an older version of the application was previously used in the same browser, old fields may remain in local storage.
 
-Make sure the CSV contains a:
-
-```text
-section
-```
-
-column.
-
-The supported section names are:
-
-```text
-personal
-profile
-education
-employment
-skills
-languages
-hobbies
-```
+To completely reset the stored data, use the **New** button or clear the site's local storage through the browser developer tools.
 
 ## Reset the Application
 
-To start from a completely empty CV, use the:
+To start from a completely empty CV, use:
 
 ```text
 New
 ```
 
-button.
-
 The application will ask for confirmation before replacing the current CV.
 
-You can also clear the browser's local storage for the application if necessary.
+For a complete reset, you can also clear the browser's local storage for the application.
 
 ## Security and Privacy
 
@@ -576,6 +697,8 @@ CV data is stored locally in the browser using `localStorage`.
 Imported files are processed directly in the browser.
 
 No CV information is intentionally uploaded to a remote server by the application.
+
+Profile photos are stored locally as part of the CV data.
 
 ## License
 
@@ -593,7 +716,11 @@ Possible future features include:
 * Dark mode
 * Multiple CV profiles
 * Cloud synchronization
-* More detailed CSV validation
 * Additional export formats
 * Template customization
 * Undo / redo support
+* More detailed form validation
+* Better JSON validation
+* Additional developer-specific fields
+* CV sharing
+* Multilingual CV support
