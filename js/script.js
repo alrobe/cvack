@@ -275,14 +275,14 @@ function preview() {
   </aside>
   <main class="main">
   <section>
-    <h2>Profile</h2>
+    <h2>Summary</h2>
     <p class="profile">
         ${p.description
             ? esc(p.description).replace(/\n/g, "<br>")
             : '<span class="empty">Añade una descripción profesional.</span>'}
     </p>
   </section>
-  ${data.employment.filter(x => x.title || x.organization).length ? `<section><h2>Employment</h2>${data.employment.filter(x => x.title || x.organization).map(x => `<div class="job"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>
+  ${data.employment.filter(x => x.title || x.organization).length ? `<section><h2>Experience</h2>${data.employment.filter(x => x.title || x.organization).map(x => `<div class="job"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>
   ${x.technologies ? `<div><b>Technologies:</b> ${esc(x.technologies)}</div>` : ""}
   ${x.tools ? `<div><b>Tools:</b> ${esc(x.tools)}</div>` : ""}
   ${x.framework ? `<div><b>Framework:</b> ${esc(x.framework)}</div>` : ""}
