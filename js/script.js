@@ -292,6 +292,20 @@ document.getElementById("file").onchange = e => {
 
     e.target.value = "";
 };
-document.getElementById("pdf").onclick = () => { toast("Abriendo impresión: elige Guardar como PDF"); setTimeout(() => window.print(), 250) };
+document.getElementById("pdf").onclick = () => {
+    const originalTitle = document.title;
+
+    document.title = getResumeFileName("pdf").replace(/\.pdf$/i, "");
+
+    toast("Abriendo impresión: elige Guardar como PDF");
+
+    setTimeout(() => {
+        window.print();
+
+        setTimeout(() => {
+            document.title = originalTitle;
+        }, 1000);
+    }, 250);
+};
 document.getElementById("new").onclick = () => { if (confirm("¿Crear un CV nuevo? Exporta primero tu JSON si quieres conservar este.")) { data = structuredClone(empty); localStorage.removeItem("orange-cv"); render(); preview(); toast("CV nuevo") } };
 render(); preview();
