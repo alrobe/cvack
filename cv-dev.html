@@ -5,14 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CVack</title>
 <link rel="stylesheet" href="./css/styles.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 <header class="top">
  <div class="logo">CV<b>ack</b></div>
  <div class="top-actions">
-  <button class="btn" id="new">Nuevo</button>
   <button class="btn" id="import">Importar Json</button>
   <button class="btn" id="export">Exportar Json</button>
+  <button class="btn" id="googleBackup">Respaldar con Google</button>
+  <button class="btn" id="googleRestore">Restaurar de Google</button>
   <button class="btn orange" id="pdf">Descargar CV</button>
   <input type="file" id="file" accept=".json,application/json" hidden>
  </div>

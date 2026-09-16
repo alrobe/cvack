@@ -308,5 +308,136 @@ document.getElementById("pdf").onclick = () => {
         }, 1000);
     }, 250);
 };
-document.getElementById("new").onclick = () => { if (confirm("¿Crear un CV nuevo? Exporta primero tu JSON si quieres conservar este.")) { data = structuredClone(empty); localStorage.removeItem("orange-cv"); render(); preview(); toast("CV nuevo") } };
+// --- Respaldo en Google Drive ---
+// Client ID de OAuth (público, no es secreto): reemplazar por el generado en
+// Google Cloud Console > APIs & Services > Credentials.
+const GOOGLE_CLIENT_ID = "321086939910-smdq0cs6dhijrdiauq7bmk2fntj8lmip.apps.googleusercontent.com";
+const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.appdata";
+const DRIVE_BACKUP_NAME = "CVack-Backup.json";
+const DRIVE_FILE_ID_KEY = "orange-cv-drive-file-id";
+
+let driveTokenClient = null;
+
+function requestDriveAccessToken(onToken) {
+    if (!window.google?.accounts?.oauth2) {
+        toast("Google todavía no cargó, intenta de nuevo en unos segundos");
+        return;
+    }
+    if (!driveTokenClient) {
+        driveTokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: DRIVE_SCOPE,
+            callback: () => {}
+        });
+    }
+    driveTokenClient.callback = resp => {
+        if (resp.error) {
+            console.error(resp);
+            toast("No se pudo conectar con Google");
+            return;
+        }
+        onToken(resp.access_token);
+    };
+    driveTokenClient.requestAccessToken();
+}
+
+function driveBackup() {
+    requestDriveAccessToken(uploadBackupToDrive);
+}
+
+function driveRestore() {
+    if (!confirm("¿Reemplazar el CV actual con el respaldo guardado en Google Drive? Los cambios no respaldados se perderán.")) return;
+    requestDriveAccessToken(downloadBackupFromDrive);
+}
+
+async function findDriveBackupFileId(accessToken) {
+    const params = new URLSearchParams({
+        spaces: "appDataFolder",
+        q: `name='${DRIVE_BACKUP_NAME}' and trashed=false`,
+        orderBy: "modifiedTime desc",
+        pageSize: "1",
+        fields: "files(id)"
+    });
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    if (!res.ok) throw new Error(`Drive API error ${res.status}`);
+    const result = await res.json();
+    return result.files?.[0]?.id || null;
+}
+
+async function uploadBackupToDrive(accessToken) {
+    try {
+        const fileId = localStorage.getItem(DRIVE_FILE_ID_KEY) || await findDriveBackupFileId(accessToken);
+        const boundary = "cvack-" + Date.now();
+        const metadata = fileId ? {} : { name: DRIVE_BACKUP_NAME, mimeType: "application/json", parents: ["appDataFolder"] };
+        const body =
+            `--${boundary}\r\n` +
+            `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+            `${JSON.stringify(metadata)}\r\n` +
+            `--${boundary}\r\n` +
+            `Content-Type: application/json\r\n\r\n` +
+            `${JSON.stringify(data, null, 2)}\r\n` +
+            `--${boundary}--`;
+
+        const url = fileId
+            ? `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`
+            : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+
+        const res = await fetch(url, {
+            method: fileId ? "PATCH" : "POST",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": `multipart/related; boundary=${boundary}`
+            },
+            body
+        });
+
+        if (res.status === 404 && fileId) {
+            localStorage.removeItem(DRIVE_FILE_ID_KEY);
+            return uploadBackupToDrive(accessToken);
+        }
+        if (!res.ok) throw new Error(`Drive API error ${res.status}`);
+
+        const result = await res.json();
+        localStorage.setItem(DRIVE_FILE_ID_KEY, result.id);
+        toast("Respaldo guardado en Google Drive");
+    } catch (err) {
+        console.error(err);
+        toast("Error al respaldar en Google Drive");
+    }
+}
+
+async function downloadBackupFromDrive(accessToken) {
+    try {
+        const fileId = localStorage.getItem(DRIVE_FILE_ID_KEY) || await findDriveBackupFileId(accessToken);
+        if (!fileId) {
+            toast("No hay ningún respaldo guardado en Google Drive");
+            return;
+        }
+
+        const fileRes = await fetch(
+            `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+        );
+
+        if (fileRes.status === 404) {
+            localStorage.removeItem(DRIVE_FILE_ID_KEY);
+            toast("El respaldo ya no existe en Google Drive");
+            return;
+        }
+        if (!fileRes.ok) throw new Error(`Drive API error ${fileRes.status}`);
+
+        const text = await fileRes.text();
+        localStorage.setItem(DRIVE_FILE_ID_KEY, fileId);
+        importJSON(text);
+    } catch (err) {
+        console.error(err);
+        toast("Error al restaurar desde Google Drive");
+    }
+}
+
+document.getElementById("googleBackup").onclick = () => driveBackup();
+document.getElementById("googleRestore").onclick = () => driveRestore();
+
 render(); preview();

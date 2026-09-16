@@ -4,7 +4,7 @@ A lightweight CV/resume builder built with vanilla HTML, CSS, and JavaScript.
 
 CVack allows users to create, edit, preview, save, import, and export professional CV data directly in the browser.
 
-The application requires no backend and no external dependencies.
+The application requires no backend. The only external dependency is Google Identity Services, used solely by the optional Google Drive backup feature.
 
 ## Features
 
@@ -26,10 +26,10 @@ The application requires no backend and no external dependencies.
 * Local browser storage
 * JSON export
 * JSON import
+* Backup to Google Drive
 * Print / Save as PDF
 * Responsive layout
 * No backend required
-* No external dependencies
 
 ## Project Structure
 
@@ -464,18 +464,6 @@ For the best result:
 
 The application uses print-specific CSS to hide the editor and navigation controls.
 
-## New CV
-
-To start a new CV, click:
-
-```text
-New
-```
-
-The application will ask for confirmation before replacing the current CV.
-
-The current CV data should be exported first if you want to keep a backup.
-
 ## Development
 
 This project uses native browser technologies:
@@ -495,6 +483,21 @@ There is no build process.
 There is no bundler.
 
 There are no npm dependencies.
+
+## Google Drive Backup
+
+The **Respaldar con Google** button lets a user sign in with their Google account and save their CV JSON to a hidden, app-specific folder in their own Google Drive (the "Application Data" folder), using Google Identity Services and the Drive API (`drive.appdata` scope) entirely from the browser — no server involved. This backup is not visible in the user's regular Drive and can only be retrieved through CVack itself; use **Exportar Json** if you want a copy you can see, move, or share manually. Each backup overwrites the same hidden file rather than creating a new one every time.
+
+The **Restaurar de Google** button does the reverse: it signs in, fetches that same hidden backup file, and loads it into the editor (after asking for confirmation, since it replaces whatever is currently open). Use it to keep editing a CV from a different browser or computer than the one it was backed up from.
+
+If you fork or self-host CVack on a different domain, this feature requires its own OAuth Web Client ID:
+
+1. Create a project in [Google Cloud Console](https://console.cloud.google.com) and enable the **Google Drive API**.
+2. Configure the **OAuth consent screen** (External) with the `https://www.googleapis.com/auth/drive.appdata` scope.
+3. Create an **OAuth Client ID** (Web application) with your domain (and `http://localhost:8000` for local development) added as an **Authorized JavaScript origin**.
+4. Replace `GOOGLE_CLIENT_ID` in `js/script.js` and `js/general.js` with the generated Client ID (this value is public and safe to commit).
+
+While the app's OAuth consent screen is in "Testing" mode, only Google accounts added as test users can use this button. Publishing the app for general public use requires Google to verify it (a public privacy policy is required), since `drive.appdata` is a sensitive scope — until verified, users will see an "unverified app" warning.
 
 ## JavaScript Responsibilities
 
@@ -674,19 +677,11 @@ as its local storage key.
 
 If an older version of the application was previously used in the same browser, old fields may remain in local storage.
 
-To completely reset the stored data, use the **New** button or clear the site's local storage through the browser developer tools.
+To completely reset the stored data, clear the site's local storage through the browser developer tools.
 
 ## Reset the Application
 
-To start from a completely empty CV, use:
-
-```text
-New
-```
-
-The application will ask for confirmation before replacing the current CV.
-
-For a complete reset, you can also clear the browser's local storage for the application.
+To start from a completely empty CV, clear the browser's local storage for the application (F12 → Application → Local Storage → remove the `orange-cv` entry).
 
 ## Security and Privacy
 
