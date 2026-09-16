@@ -413,10 +413,37 @@ const GOOGLE_CLIENT_ID = "321086939910-smdq0cs6dhijrdiauq7bmk2fntj8lmip.apps.goo
 const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.appdata";
 const DRIVE_BACKUP_NAME = "CVack-Backup.json";
 const DRIVE_FILE_ID_KEY = "orange-cv-drive-file-id";
+const DRIVE_TOKEN_KEY = "orange-cv-drive-token";
 
 let driveTokenClient = null;
 
+function getCachedDriveAccessToken() {
+    try {
+        const cached = JSON.parse(sessionStorage.getItem(DRIVE_TOKEN_KEY) || "null");
+        if (!cached || Date.now() >= cached.expiresAt) return null;
+        return cached.accessToken;
+    } catch {
+        return null;
+    }
+}
+
+function cacheDriveAccessToken(accessToken, expiresInSeconds) {
+    sessionStorage.setItem(DRIVE_TOKEN_KEY, JSON.stringify({
+        accessToken,
+        expiresAt: Date.now() + (expiresInSeconds * 1000) - 60000 // 1 min safety margin
+    }));
+}
+
+function clearCachedDriveAccessToken() {
+    sessionStorage.removeItem(DRIVE_TOKEN_KEY);
+}
+
 function requestDriveAccessToken(onToken) {
+    const cachedToken = getCachedDriveAccessToken();
+    if (cachedToken) {
+        onToken(cachedToken);
+        return;
+    }
     if (!window.google?.accounts?.oauth2) {
         toast("Google todavía no cargó, intenta de nuevo en unos segundos");
         return;
@@ -434,6 +461,7 @@ function requestDriveAccessToken(onToken) {
             toast("No se pudo conectar con Google");
             return;
         }
+        cacheDriveAccessToken(resp.access_token, resp.expires_in);
         onToken(resp.access_token);
     };
     driveTokenClient.requestAccessToken();
@@ -491,6 +519,11 @@ async function uploadBackupToDrive(accessToken) {
             body
         });
 
+        if (res.status === 401) {
+            clearCachedDriveAccessToken();
+            toast("La sesión con Google expiró, intenta de nuevo");
+            return;
+        }
         if (res.status === 404 && fileId) {
             localStorage.removeItem(DRIVE_FILE_ID_KEY);
             return uploadBackupToDrive(accessToken);
@@ -519,6 +552,11 @@ async function downloadBackupFromDrive(accessToken) {
             { headers: { Authorization: `Bearer ${accessToken}` } }
         );
 
+        if (fileRes.status === 401) {
+            clearCachedDriveAccessToken();
+            toast("La sesión con Google expiró, intenta de nuevo");
+            return;
+        }
         if (fileRes.status === 404) {
             localStorage.removeItem(DRIVE_FILE_ID_KEY);
             toast("El respaldo ya no existe en Google Drive");
