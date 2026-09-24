@@ -319,10 +319,6 @@ textarea {
     margin-bottom: 9px
 }
 
-.skill.has-category {
-    grid-template-columns: 1fr 180px 100px 38px
-}
-
 .skill input,
 .skill select,
 .lang input,
@@ -493,15 +489,6 @@ textarea {
     margin: 9px 0
 }
 
-.skill-category {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    opacity: .7;
-    margin: 8px 0 4px
-}
-
 .dots {
     color: var(--logo-cv);
     font-size: 10px;
@@ -662,10 +649,6 @@ textarea {
     .skill,
     .lang {
         grid-template-columns: 1fr 120px 38px
-    }
-
-    .skill.has-category {
-        grid-template-columns: 1fr 100px 90px 32px
     }
 
     .preview-area {
