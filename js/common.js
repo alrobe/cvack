@@ -68,10 +68,7 @@ function edu(x, i) {
  ${richField("Description", x.description, "full", `data-edu="${i}" data-key="description"`)}
  </div></div>`
 }
-function skill(x, i) {
-    const hasCategories = typeof SKILL_CATEGORIES !== "undefined";
-    return `<div class="skill${hasCategories ? " has-category" : ""}"><input data-skill="${i}" data-key="skill" value="${esc(x.skill)}">${hasCategories ? `<select data-skill="${i}" data-key="category">${SKILL_CATEGORIES.map(c => `<option ${c == x.category ? "selected" : ""}>${c}</option>`).join("")}</select>` : ""}<select data-skill="${i}" data-key="level">${skillLevels.map(v => `<option ${v == x.level ? "selected" : ""}>${v}</option>`).join("")}</select><button class="icon danger" data-del-skill="${i}">×</button></div>`
-}
+function skill(x, i) { return `<div class="skill"><input data-skill="${i}" data-key="skill" value="${esc(x.skill)}"><select data-skill="${i}" data-key="level">${skillLevels.map(v => `<option ${v == x.level ? "selected" : ""}>${v}</option>`).join("")}</select><button class="icon danger" data-del-skill="${i}">×</button></div>` }
 function lang(x, i) { return `<div class="lang"><input data-lang="${i}" data-key="language" value="${esc(x.language)}"><select data-lang="${i}" data-key="level">${langLevels.map(v => `<option ${v == x.level ? "selected" : ""}>${v}</option>`).join("")}</select><button class="icon danger" data-del-lang="${i}">×</button></div>` }
 
 function move(spec, dir) { let [t, i] = spec.split(":"); i = +i; let j = i + dir; if (j < 0 || j >= data[t].length) return;[data[t][i], data[t][j]] = [data[t][j], data[t][i]]; render(); save() }
