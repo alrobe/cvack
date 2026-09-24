@@ -14,15 +14,6 @@ button {
     cursor: pointer
 }
 
-.top {
-    height: 64px;
-    justify-content: space-between;
-    padding: 0 18px;
-    position: sticky;
-    top: 0;
-    z-index: 30
-}
-
 .top-actions {
     display: flex;
     gap: 8px
