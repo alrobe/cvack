@@ -82,12 +82,6 @@ button {
     border-color: var(--blue)
 }
 
-.btn.orange {
-    background: var(--orange);
-    color: #fff;
-    border-color: var(--orange)
-}
-
 .btn.small {
     padding: 7px 10px;
     font-size: 13px
