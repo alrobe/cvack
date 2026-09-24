@@ -23,10 +23,20 @@ const empty = {
     theme: "classic"
 };
 const ARRAY_FIELDS = ["education", "employment", "skills", "languages"];
+const SKILL_CATEGORIES = [
+    "Programming Languages",
+    "Frameworks & Libraries",
+    "Databases",
+    "Cloud & Platforms",
+    "DevOps & Automation",
+    "Version Control",
+    "AI & Machine Learning",
+    "Soft Skills"
+];
 const ITEM_TEMPLATES = {
     education: { title: "", organization: "", startDate: "", endDate: "", description: "" },
     employment: { title: "", organization: "", startDate: "", endDate: "", technologies: "", tools: "", framework: "", versionControl: "", projectManagement: "", project: "", description: "" },
-    skills: { skill: "", level: "Good" },
+    skills: { skill: "", level: "Good", category: SKILL_CATEGORIES[0] },
     languages: { language: "", level: "B2" }
 };
 const MIGRATIONS = {
@@ -227,7 +237,10 @@ function preview() {
   ${p.headline2 ? `<div class="headline">${esc(p.headline2)}</div>` : ""}
   <h3>Personal details</h3>
   <div class="contact">${contact.map(c => c.lines ? `<div class="contact-row">${c.icon}<div>${c.lines.map(esc).join("<br>")}</div></div>` : `<div>${c.icon || ""}${esc(c.value)}</div>`).join("") || '<div style="opacity:.6">Email · phone · LinkedIn · Website</div>'}</div>
-  ${data.skills.some(x => x.skill) ? `<h3>Skills</h3>${data.skills.filter(x => x.skill).map(x => `<div class="cvskill"><span>${esc(x.skill)}</span>${dots(x.level)}</div>`).join("")}` : ""}
+  ${data.skills.some(x => x.skill) ? `<h3>Skills</h3>${SKILL_CATEGORIES.map(cat => {
+      const items = data.skills.filter(x => x.skill && x.category === cat);
+      return items.length ? `<div class="skill-category">${esc(cat)}</div>${items.map(x => `<div class="cvskill"><span>${esc(x.skill)}</span>${dots(x.level)}</div>`).join("")}` : "";
+  }).join("")}` : ""}
   ${data.languages.some(x => x.language) ? `<h3>Languages</h3>${data.languages.filter(x => x.language).map(x => `<div class="cvskill"><span>${esc(x.language)}</span>${langDots(x.level)}</div>`).join("")}` : ""}
   </aside>
   <main class="main">
