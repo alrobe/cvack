@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CVack — Privacy Policy</title>
+
+    <link rel="stylesheet" href="./css/legal.css">
+</head>
+
+<body>
+
+<header class="top">
+    <a class="logo" href="./index.html">
+        CV<b>ack</b>
+    </a>
+</header>
+
+<main class="legal">
+
+    <a class="back-link" href="./index.html">← Back to CVack</a>
+
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: September 24, 2026</p>
+
+    <div class="card">
+
+        <section>
+            <h2>Overview</h2>
+            <p>
+                CVack is a CV/resume builder that runs entirely in your browser.
+                There is no backend server: CVack does not have a database, does
+                not run analytics or tracking scripts, and does not collect,
+                sell, or share your personal information with anyone.
+            </p>
+            <p>
+                This policy explains what information CVack handles, where it
+                is stored, and how the optional Google Drive backup feature
+                works.
+            </p>
+        </section>
+
+        <section>
+            <h2>Information you enter into CVack</h2>
+            <p>
+                When you use CVack, you may enter personal information to
+                build your CV, such as your name, contact details, work
+                history, education, skills, and an optional profile photo.
+            </p>
+            <p>
+                This information is entered directly by you and is never
+                transmitted to any server operated by CVack. It exists only
+                on your device, inside your browser.
+            </p>
+        </section>
+
+        <section>
+            <h2>Local storage (your browser only)</h2>
+            <p>
+                CVack automatically saves your CV data in your browser's
+                <code>localStorage</code>, under the key <code>orange-cv</code>,
+                so you don't lose your progress between visits. This data
+                stays on your device and is only accessible to CVack running
+                in that specific browser.
+            </p>
+            <p>
+                You can delete this data at any time by clearing your
+                browser's site data for CVack, or by using the "Export JSON"
+                feature to save a copy before doing so.
+            </p>
+        </section>
+
+        <section>
+            <h2>Google Drive backup (optional)</h2>
+            <p>
+                CVack offers an optional "Back up with Google" / "Restore from
+                Google" feature. If you choose to use it, CVack uses Google
+                Identity Services to ask you to sign in and grant access to
+                the <code>drive.appdata</code> scope, entirely from your
+                browser — no CVack server is involved at any point.
+            </p>
+            <ul>
+                <li>
+                    Your CV data is saved as a single JSON file inside your
+                    own Google Drive's hidden "Application Data" folder, a
+                    space that only CVack can read or write to. It is not
+                    visible in your regular Google Drive.
+                </li>
+                <li>
+                    This backup is only created, read, or updated when you
+                    actively click the backup or restore buttons — CVack
+                    never accesses your Google Drive in the background.
+                </li>
+                <li>
+                    The OAuth access token Google issues is kept only in your
+                    browser's <code>sessionStorage</code> for the current
+                    tab, and is cleared automatically when you close the tab.
+                </li>
+                <li>
+                    CVack does not have, and cannot obtain, access to any
+                    other file in your Google Drive.
+                </li>
+                <li>
+                    You can revoke CVack's access at any time from your
+                    <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account permissions page</a>.
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>What CVack does not do</h2>
+            <ul>
+                <li>No analytics, advertising, or tracking scripts.</li>
+                <li>No cookies used for tracking purposes.</li>
+                <li>No sharing or selling of your data to third parties.</li>
+                <li>No server-side storage of your CV data.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Children's privacy</h2>
+            <p>
+                CVack is not directed at children and does not knowingly
+                collect information from children.
+            </p>
+        </section>
+
+        <section>
+            <h2>Changes to this policy</h2>
+            <p>
+                If this policy changes, the updated version will be published
+                on this same page with a new "Last updated" date.
+            </p>
+        </section>
+
+        <section>
+            <h2>Contact</h2>
+            <p>
+                For questions about this privacy policy or CVack, please open
+                an issue on
+                <a href="https://github.com/alrobe/cvack/issues" target="_blank" rel="noopener">GitHub</a>.
+            </p>
+        </section>
+
+    </div>
+
+</main>
+
+</body>
+</html>

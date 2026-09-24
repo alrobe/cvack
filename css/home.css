@@ -348,6 +348,16 @@ body {
     font-weight: 800;
 }
 
+.home-footer a {
+    color: #999;
+    text-decoration: none;
+}
+
+.home-footer a:hover {
+    color: var(--text);
+    text-decoration: underline;
+}
+
 
 /* =========================
    RESPONSIVE

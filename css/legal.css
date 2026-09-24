@@ -1,0 +1,169 @@
+:root {
+    --blue: #3974d9;
+    --blue-light: #edf4ff;
+
+    --orange: #984934;
+
+    --text: #303038;
+    --muted: #72737b;
+
+    --line: #e1e1e6;
+    --bg: #f7f7f9;
+    --card: #fff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+}
+
+.top {
+    height: 70px;
+
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 28px;
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+
+    color: inherit;
+    text-decoration: none;
+}
+
+.logo b {
+    color: var(--orange);
+}
+
+.legal {
+    max-width: 720px;
+    margin: 0 auto;
+
+    padding: 55px 24px 70px;
+}
+
+.legal .back-link {
+    display: inline-block;
+
+    margin-bottom: 24px;
+
+    color: var(--blue);
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.legal .back-link:hover {
+    text-decoration: underline;
+}
+
+.legal h1 {
+    margin: 0 0 6px;
+
+    font-size: clamp(30px, 5vw, 42px);
+    line-height: 1.1;
+
+    letter-spacing: -1.5px;
+}
+
+.legal .updated {
+    margin: 0 0 40px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+.legal section {
+    margin-bottom: 32px;
+}
+
+.legal h2 {
+    margin: 0 0 12px;
+
+    font-size: 20px;
+    letter-spacing: -.3px;
+}
+
+.legal p,
+.legal li {
+    color: var(--text);
+
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+.legal p {
+    margin: 0 0 14px;
+}
+
+.legal ul {
+    margin: 0 0 14px;
+    padding-left: 22px;
+}
+
+.legal li {
+    margin-bottom: 6px;
+}
+
+.legal a {
+    color: var(--blue);
+}
+
+.legal code {
+    background: var(--blue-light);
+
+    padding: 2px 6px;
+    border-radius: 5px;
+
+    font-size: 13px;
+}
+
+.legal .card {
+    background: var(--card);
+
+    border: 1px solid var(--line);
+    border-radius: 14px;
+
+    padding: 22px 24px;
+
+    box-shadow: 0 5px 25px #00000009;
+}
+
+@media (max-width: 500px) {
+    .top {
+        height: 62px;
+        padding: 0 18px;
+    }
+
+    .legal {
+        padding: 35px 18px 50px;
+    }
+}
