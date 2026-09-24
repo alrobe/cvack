@@ -2,6 +2,8 @@
     --blue: #3974d9;
     --blue2: #edf4ff;
     --orange: #984934;
+    --logo-cv: #0267fb;
+    --logo-ack: #041d45;
     --orange-dark: #813a2a;
     --text: #303038;
     --muted: #72737b;
@@ -52,12 +54,12 @@ button {
 .logo {
     font-size: 21px;
     font-weight: 800;
-    color: inherit;
+    color: var(--logo-cv);
     text-decoration: none
 }
 
 .logo b {
-    color: var(--orange)
+    color: var(--logo-ack);
 }
 
 .top-actions {

@@ -3,6 +3,8 @@
     --blue-light: #edf4ff;
 
     --orange: #984934;
+    --logo-cv: #0267fb;
+    --logo-ack: #041d45;
 
     --text: #303038;
     --muted: #72737b;
@@ -52,12 +54,12 @@ body {
     font-weight: 800;
     letter-spacing: -0.5px;
 
-    color: inherit;
+    color: var(--logo-cv);
     text-decoration: none;
 }
 
 .logo b {
-    color: var(--orange);
+    color: var(--logo-ack);
 }
 
 .legal {
