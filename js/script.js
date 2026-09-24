@@ -19,8 +19,14 @@ const empty = {
     theme: "classic"
 };
 const ARRAY_FIELDS = ["education", "employment", "skills", "languages"];
+const ITEM_TEMPLATES = {
+    education: { title: "", organization: "", startDate: "", endDate: "", description: "" },
+    employment: { title: "", organization: "", startDate: "", endDate: "", technologies: "", tools: "", framework: "", versionControl: "", projectManagement: "", project: "", description: "" },
+    skills: { skill: "", level: "Good" },
+    languages: { language: "", level: "B2" }
+};
 const STORAGE_KEY = "cvack-dev";
-const DRIVE_BACKUP_NAME = "CVack-Backup-Dev.json";
+const DRIVE_BACKUP_NAME = "cvack-dev.json";
 const DRIVE_FILE_ID_KEY = "cvack-dev-drive-file-id";
 let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || structuredClone(empty);
 
@@ -181,19 +187,7 @@ function job(x, i) {
 function bind() {
     bindCommon();
     document.getElementById("addJob").onclick = () => {
-        data.employment.push({
-            title: "",
-            organization: "",
-            startDate: "",
-            endDate: "",
-            technologies: "",
-            tools: "",
-            framework: "",
-            versionControl: "",
-            projectManagement: "",
-            project: "",
-            description: ""
-        });
+        data.employment.push(structuredClone(ITEM_TEMPLATES.employment));
 
         render();
         save();

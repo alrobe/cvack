@@ -127,19 +127,9 @@ function bindCommon() {
     document.querySelectorAll("[data-del-lang]").forEach(b => b.onclick = () => { data.languages.splice(+b.dataset.delLang, 1); render(); save() });
     document.querySelectorAll("[data-up]").forEach(b => b.onclick = () => move(b.dataset.up, -1));
     document.querySelectorAll("[data-down]").forEach(b => b.onclick = () => move(b.dataset.down, 1));
-    document.getElementById("addEdu").onclick = () => {
-        data.education.push({
-            title: "",
-            organization: "",
-            startDate: "",
-            endDate: "",
-            description: ""
-        });
-        render();
-        save()
-    };
-    document.getElementById("addSkill").onclick = () => { data.skills.push({ skill: "", level: "Good" }); render(); save() };
-    document.getElementById("addLang").onclick = () => { data.languages.push({ language: "", level: "B2" }); render(); save() };
+    document.getElementById("addEdu").onclick = () => { data.education.push(structuredClone(ITEM_TEMPLATES.education)); render(); save() };
+    document.getElementById("addSkill").onclick = () => { data.skills.push(structuredClone(ITEM_TEMPLATES.skills)); render(); save() };
+    document.getElementById("addLang").onclick = () => { data.languages.push(structuredClone(ITEM_TEMPLATES.languages)); render(); save() };
     const pf = document.getElementById("photoFile"), pb = document.getElementById("photoBtn"), rp = document.getElementById("removePhoto");
     if (data.personal.photo) { rp.classList.remove("hidden") }
     pb.onclick = () => pf.click(); rp.onclick = () => { data.personal.photo = ""; render(); save() };
@@ -182,6 +172,14 @@ function exportJSON() {
     toast("CV exported successfully");
 }
 
+function pickFields(obj, template) {
+    const result = {};
+    Object.keys(template).forEach(k => {
+        result[k] = (obj && typeof obj === "object" && k in obj) ? obj[k] : template[k];
+    });
+    return result;
+}
+
 function importJSON(s) {
     const imported = JSON.parse(s);
 
@@ -190,16 +188,17 @@ function importJSON(s) {
         throw new Error("Invalid JSON");
     }
 
-    data = {
-        ...structuredClone(empty),
-        ...imported,
-        personal: {
-            ...structuredClone(empty.personal),
-            ...(imported.personal || {})
-        }
-    };
+    // Only known fields are kept - anything else in the imported JSON
+    // (extra top-level keys, extra personal/item fields) is dropped here,
+    // so it never ends up in localStorage or a Google Drive backup.
+    data = pickFields(imported, empty);
+    data.personal = pickFields(imported.personal, empty.personal);
     ARRAY_FIELDS.forEach(f => {
-        data[f] = Array.isArray(imported[f]) ? imported[f] : [];
+        const items = Array.isArray(imported[f]) ? imported[f] : [];
+        const template = ITEM_TEMPLATES[f];
+        data[f] = template
+            ? items.map(item => pickFields(item, template))
+            : items.map(item => typeof item === "string" ? item : String(item ?? ""));
     });
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));

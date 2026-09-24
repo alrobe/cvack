@@ -20,8 +20,14 @@ const empty = {
     theme: "classic"
 };
 const ARRAY_FIELDS = ["education", "employment", "skills", "languages", "hobbies"];
+const ITEM_TEMPLATES = {
+    education: { title: "", organization: "", startDate: "", endDate: "", description: "" },
+    employment: { title: "", organization: "", startDate: "", endDate: "", description: "" },
+    skills: { skill: "", level: "Good" },
+    languages: { language: "", level: "B2" }
+};
 const STORAGE_KEY = "cvack-general";
-const DRIVE_BACKUP_NAME = "CVack-Backup-General.json";
+const DRIVE_BACKUP_NAME = "cvack-general.json";
 const DRIVE_FILE_ID_KEY = "cvack-general-drive-file-id";
 let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || structuredClone(empty);
 
@@ -96,7 +102,7 @@ function bind() {
     bindCommon();
     document.querySelectorAll("[data-hobby]").forEach(e => e.oninput = () => { data.hobbies[+e.dataset.hobby] = e.value; save() });
     document.querySelectorAll("[data-del-hobby]").forEach(b => b.onclick = () => { data.hobbies.splice(+b.dataset.delHobby, 1); render(); save() });
-    document.getElementById("addJob").onclick = () => { data.employment.push({ title: "", organization: "", startDate: "", endDate: "", description: "" }); render(); save() };
+    document.getElementById("addJob").onclick = () => { data.employment.push(structuredClone(ITEM_TEMPLATES.employment)); render(); save() };
     document.getElementById("addHobby").onclick = () => { data.hobbies.push(""); render(); save() };
 }
 
