@@ -1,10 +1,8 @@
 :root {
     --blue: #3974d9;
     --blue2: #edf4ff;
-    --orange: #984934;
     --logo-cv: #0267fb;
     --logo-ack: #041d45;
-    --orange-dark: #813a2a;
     --text: #303038;
     --muted: #72737b;
     --line: #e1e1e6;
@@ -430,7 +428,7 @@ textarea {
 }
 
 .side {
-    background: var(--orange);
+    background: var(--logo-ack);
     color: white;
     padding: 33px 21px
 }
@@ -575,7 +573,7 @@ textarea {
 }
 
 .org {
-    color: var(--orange)
+    color: var(--logo-cv)
 }
 
 .job b {
