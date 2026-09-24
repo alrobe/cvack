@@ -414,9 +414,9 @@ The general structure of the CV data is:
     "description": "",
     "photo": ""
   },
-  "education": [],
-  "employment": [],
   "skills": [],
+  "employment": [],
+  "education": [],
   "languages": []
 }
 ```

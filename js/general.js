@@ -12,9 +12,9 @@ const empty = {
         description: "",
         photo: ""
     },
-    education: [],
-    employment: [],
     skills: [],
+    employment: [],
+    education: [],
     languages: [],
     hobbies: [],
     theme: "classic"
