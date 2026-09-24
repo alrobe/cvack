@@ -1,28 +1,6 @@
-:root {
-    --blue: #3974d9;
-    --blue2: #edf4ff;
-    --logo-cv: #0267fb;
-    --logo-ack: #041d45;
-    --text: #303038;
-    --muted: #72737b;
-    --line: #e1e1e6;
-    --bg: #f7f7f9;
-    --card: #fff;
-}
-
 * {
-    box-sizing: border-box;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-}
-
-html,
-body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif
 }
 
 button,
@@ -38,10 +16,6 @@ button {
 
 .top {
     height: 64px;
-    background: #fff;
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    align-items: center;
     justify-content: space-between;
     padding: 0 18px;
     position: sticky;
@@ -50,14 +24,7 @@ button {
 }
 
 .logo {
-    font-size: 21px;
-    font-weight: 800;
-    color: var(--logo-cv);
-    text-decoration: none
-}
-
-.logo b {
-    color: var(--logo-ack);
+    font-size: 21px
 }
 
 .top-actions {
@@ -241,7 +208,7 @@ textarea {
 }
 
 .rte-btn.active {
-    background: var(--blue2);
+    background: var(--blue-light);
     border-color: var(--blue);
     color: var(--blue)
 }

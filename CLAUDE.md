@@ -26,6 +26,7 @@ Deployed via GitHub Pages (branch `main`, root) at `https://cvack.arobasoft.com`
 - `cv-dev.html` + `js/script.js` — developer-focused CV editor (adds technologies/tools/framework/version control/project fields to employment entries).
 - `css/styles.css` — shared styles for both editors' layout, forms, A4 preview paper, and print rules.
 - `privacy.html`, styled by `css/legal.css` — standalone privacy policy page, linked from the home page footer and required by Google's OAuth branding settings / brand verification (see "Google Drive backup" below).
+- `css/base.css` — CSS loaded before every page's own stylesheet (via its own `<link>` tag in each HTML file, since there's no build step to `@import` or bundle it). Holds only what's identical across `home.css`/`styles.css`/`legal.css`: the `:root` color variables, the `*`/`html,body`/`body` reset, and the shared parts of `.top`/`.logo`/`.logo b`. Each page's own stylesheet keeps only its page-specific overrides (e.g. `.top` height/padding differ per page) — check `base.css` before adding a new color variable or reset rule to avoid re-duplicating it across the three page stylesheets.
 
 `general.js` and `script.js` are two independent, near-duplicate copies of the same editor logic (not shared modules), each with its own `empty` data schema tailored to its CV type. There is no shared JS file between them — a fix or feature added to one (e.g. render/bind/preview logic, import/export, photo handling) must be manually ported to the other if it should apply to both.
 
