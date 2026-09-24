@@ -16,7 +16,8 @@ const empty = {
     employment: [],
     skills: [],
     languages: [],
-    hobbies: []
+    hobbies: [],
+    theme: "classic"
 };
 let data = JSON.parse(localStorage.getItem("orange-cv") || "null") || structuredClone(empty);
 const EMAIL_ICON = `<svg class="contact-icon" viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4.5" width="16" height="11" rx="1.5"/><path d="M3 5.5l7 6 7-6"/></svg>`;
@@ -231,7 +232,10 @@ function preview() {
         p.linkedin && { value: p.linkedin, icon: LINKEDIN_ICON },
         p.website && { value: p.website, icon: WEBSITE_ICON }
     ].filter(Boolean);
-    document.getElementById("preview").innerHTML = `<div class="paper">
+    const navy = data.theme === "navy";
+    document.getElementById("themeLabel").textContent = `${navy ? "Navy" : "Classic"} Resume · A4`;
+    document.getElementById("themeToggle").textContent = `Switch to ${navy ? "Classic" : "Navy"}`;
+    document.getElementById("preview").innerHTML = `<div class="paper${navy ? " navy" : ""}">
  <aside class="side">
   ${p.photo ? `<div class="photo"><img src="${p.photo}"></div>` : ""}
   <h1>${esc([p.name, p.lastname].filter(Boolean).join(" ") || "Your name")}</h1>
@@ -350,6 +354,10 @@ document.getElementById("file").onchange = e => {
     r.readAsText(f, "utf-8");
 
     e.target.value = "";
+};
+document.getElementById("themeToggle").onclick = () => {
+    data.theme = data.theme === "navy" ? "classic" : "navy";
+    save();
 };
 document.getElementById("pdf").onclick = () => {
     const originalTitle = document.title;
