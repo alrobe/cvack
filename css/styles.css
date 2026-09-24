@@ -486,6 +486,14 @@ textarea {
     overflow-wrap: anywhere
 }
 
+.contact-icon {
+    vertical-align: -1.5px;
+
+    margin-right: 5px;
+
+    opacity: .85
+}
+
 .cvskill {
     display: flex;
     justify-content: space-between;
