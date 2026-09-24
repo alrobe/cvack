@@ -6,16 +6,9 @@ const empty = {
         email: "",
         phone: "",
         address: "",
-        postcode: "",
         city: "",
         website: "",
         linkedin: "",
-        dob: "",
-        birthPlace: "",
-        license: "",
-        gender: "",
-        nationality: "",
-        civilStatus: "",
         description: "",
         photo: ""
     },
@@ -91,20 +84,13 @@ function render() {
    <div class="grid">
     ${field("First name", "name", p.name, "", `data-p="name"`)}
     ${field("Last name", "lastname", p.lastname, "", `data-p="lastname"`)}
-    ${field("Desired position", "headline2", p.headline2 || "", "", `data-p="headline2"`)}
+    ${field("Desired position", "headline2", p.headline2 || "", "full", `data-p="headline2"`)}
     ${field("Email", "email", p.email, "", `data-p="email"`)}
     ${field("Phone", "phone", p.phone, "", `data-p="phone"`)}
     ${field("Address", "address", p.address, "full", `data-p="address"`)}
-    ${field("Postcode", "postcode", p.postcode, "", `data-p="postcode"`)}
-    ${field("City", "city", p.city, "", `data-p="city"`)}
+    ${field("City", "city", p.city, "full", `data-p="city"`)}
     ${field("Website", "website", p.website, "", `data-p="website"`)}
     ${field("LinkedIn", "linkedin", p.linkedin, "", `data-p="linkedin"`)}
-    ${field("Date of birth", "dob", p.dob, "", `data-p="dob"`)}
-    ${field("Place of birth", "birthPlace", p.birthPlace, "", `data-p="birthPlace"`)}
-    ${field("Driving license", "license", p.license, "", `data-p="license"`)}
-    ${field("Gender", "gender", p.gender, "", `data-p="gender"`)}
-    ${field("Nationality", "nationality", p.nationality, "", `data-p="nationality"`)}
-    ${field("Civil status", "civilStatus", p.civilStatus, "", `data-p="civilStatus"`)}
    </div>
    ${richField("Description", p.description, "", `id="description"`)}
   </div>
@@ -217,21 +203,27 @@ function bind() {
 }
 function move(spec, dir) { let [t, i] = spec.split(":"); i = +i; let j = i + dir; if (j < 0 || j >= data[t].length) return;[data[t][i], data[t][j]] = [data[t][j], data[t][i]]; render(); save() }
 
-function dots(level) {
-    let n = skillLevels.indexOf(level) + 1;
-
-    if (n < 1) n = 3;
-
+function dotsMarkup(n) {
     return `
         <span class="dots">
             ${"●".repeat(n)}<span style="opacity:.38">${"●".repeat(5 - n)}</span>
         </span>
     `;
 }
+function dots(level) {
+    let n = skillLevels.indexOf(level) + 1;
+
+    if (n < 1) n = 3;
+
+    return dotsMarkup(n);
+}
+const LANG_DOTS = { "Beginner": 1, "Moderate": 2, "Good": 3, "Very good": 4, "Fluent": 5, "A1": 1, "A2": 1, "B1": 2, "B2": 3, "C1": 4, "C2": 5 };
+function langDots(level) {
+    return dotsMarkup(LANG_DOTS[level] || 3);
+}
 function preview() {
     let p = data.personal;
-    let cityLine = [p.postcode, p.city].filter(Boolean).join(" ");
-    let addressLines = [p.address, cityLine].filter(Boolean);
+    let addressLines = [p.address, p.city].filter(Boolean);
     let contact = [
         p.email && { value: p.email, icon: EMAIL_ICON },
         p.phone && { value: p.phone, icon: PHONE_ICON },
@@ -247,7 +239,7 @@ function preview() {
   <h3>Personal details</h3>
   <div class="contact">${contact.map(c => c.lines ? `<div class="contact-row">${c.icon}<div>${c.lines.map(esc).join("<br>")}</div></div>` : `<div>${c.icon || ""}${esc(c.value)}</div>`).join("") || '<div style="opacity:.6">Email · phone · city</div>'}</div>
   ${data.skills.some(x => x.skill) ? `<h3>Skills</h3>${data.skills.filter(x => x.skill).map(x => `<div class="cvskill"><span>${esc(x.skill)}</span>${dots(x.level)}</div>`).join("")}` : ""}
-  ${data.languages.some(x => x.language) ? `<h3>Languages</h3>${data.languages.filter(x => x.language).map(x => `<div class="cvskill"><span>${esc(x.language)}</span><span>${esc(x.level)}</span></div>`).join("")}` : ""}
+  ${data.languages.some(x => x.language) ? `<h3>Languages</h3>${data.languages.filter(x => x.language).map(x => `<div class="cvskill"><span>${esc(x.language)}</span>${langDots(x.level)}</div>`).join("")}` : ""}
   ${data.hobbies.filter(Boolean).length ? `<h3>Hobbies</h3><div class="contact">${data.hobbies.filter(Boolean).map(x => `<div>${esc(x)}</div>`).join("")}</div>` : ""}
  </aside>
  <main class="main">
