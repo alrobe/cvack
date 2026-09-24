@@ -494,6 +494,17 @@ textarea {
     opacity: .85
 }
 
+.contact-row {
+    display: flex;
+    align-items: center;
+    gap: 5px
+}
+
+.contact-row .contact-icon {
+    margin-right: 0;
+    flex-shrink: 0
+}
+
 .cvskill {
     display: flex;
     justify-content: space-between;

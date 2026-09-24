@@ -5,6 +5,9 @@ const empty = {
         headline2: "",
         email: "",
         phone: "",
+        address: "",
+        postcode: "",
+        city: "",
         linkedin: "",
         website: "",
         description: "",
@@ -20,6 +23,7 @@ const EMAIL_ICON = `<svg class="contact-icon" viewBox="0 0 20 20" width="12" hei
 const PHONE_ICON = `<svg class="contact-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
 const LINKEDIN_ICON = `<svg class="contact-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7.5" y1="10.5" x2="7.5" y2="17"/><circle cx="7.5" cy="6.8" r=".9" fill="currentColor" stroke="none"/><line x1="11.5" y1="10.5" x2="11.5" y2="17"/><path d="M11.5 13.2a2.3 2.3 0 0 1 4.6 0V17"/></svg>`;
 const WEBSITE_ICON = `<svg class="contact-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+const HOME_ICON = `<svg class="contact-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
 const skillLevels = ["Beginner", "Moderate", "Good", "Very good", "Excellent"];
 const langLevels = ["Beginner", "Moderate", "Good", "Very good", "Fluent", "A1", "A2", "B1", "B2", "C1", "C2"];
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
@@ -83,6 +87,9 @@ function render() {
     ${field("Desired position", "headline2", p.headline2, "full", `data-p="headline2"`)}
     ${field("Email", "email", p.email, "", `data-p="email"`)}
     ${field("Phone", "phone", p.phone, "", `data-p="phone"`)}
+    ${field("Address", "address", p.address, "full", `data-p="address"`)}
+    ${field("Postcode", "postcode", p.postcode, "", `data-p="postcode"`)}
+    ${field("City", "city", p.city, "", `data-p="city"`)}
     ${field("LinkedIn", "linkedin", p.linkedin, "", `data-p="linkedin"`)}
     ${field("Website", "website", p.website, "", `data-p="website"`)}
     ${richField("Description", p.description, "full", `id="description"`)}
@@ -314,9 +321,12 @@ function dots(level) {
 }
 function preview() {
     let p = data.personal;
+    let cityLine = [p.postcode, p.city].filter(Boolean).join(" ");
+    let addressLines = [p.address, cityLine].filter(Boolean);
     let contact = [
         p.email && { value: p.email, icon: EMAIL_ICON },
         p.phone && { value: p.phone, icon: PHONE_ICON },
+        addressLines.length && { lines: addressLines, icon: HOME_ICON },
         p.linkedin && { value: p.linkedin, icon: LINKEDIN_ICON },
         p.website && { value: p.website, icon: WEBSITE_ICON }
     ].filter(Boolean);
@@ -326,7 +336,7 @@ function preview() {
   <h1>${esc([p.name, p.lastname].filter(Boolean).join(" ") || "Your name")}</h1>
   ${p.headline2 ? `<div class="headline">${esc(p.headline2)}</div>` : ""}
   <h3>Personal details</h3>
-  <div class="contact">${contact.map(c => `<div>${c.icon || ""}${esc(c.value)}</div>`).join("") || '<div style="opacity:.6">Email · phone · LinkedIn · Website</div>'}</div>
+  <div class="contact">${contact.map(c => c.lines ? `<div class="contact-row">${c.icon}<div>${c.lines.map(esc).join("<br>")}</div></div>` : `<div>${c.icon || ""}${esc(c.value)}</div>`).join("") || '<div style="opacity:.6">Email · phone · LinkedIn · Website</div>'}</div>
   ${data.skills.some(x => x.skill) ? `<h3>Skills</h3>${data.skills.filter(x => x.skill).map(x => `<div class="cvskill"><span>${esc(x.skill)}</span>${dots(x.level)}</div>`).join("")}` : ""}
   ${data.languages.some(x => x.language) ? `<h3>Languages</h3>${data.languages.filter(x => x.language).map(x => `<div class="cvskill"><span>${esc(x.language)}</span><span>${esc(x.level)}</span></div>`).join("")}` : ""}
   </aside>
