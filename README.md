@@ -497,7 +497,7 @@ If you fork or self-host CVack on a different domain, this feature requires its 
 3. Create an **OAuth Client ID** (Web application) with your domain (and `http://localhost:8000` for local development) added as an **Authorized JavaScript origin**.
 4. Replace `GOOGLE_CLIENT_ID` in `js/script.js` and `js/general.js` with the generated Client ID (this value is public and safe to commit).
 
-While the app's OAuth consent screen is in "Testing" mode, only Google accounts added as test users can use this button. Publishing the app for general public use requires Google to verify it (a public privacy policy is required), since `drive.appdata` is a sensitive scope — until verified, users will see an "unverified app" warning.
+While the app's OAuth consent screen is in "Testing" mode, only Google accounts added as test users can use this button. Since `drive.appdata` is a non-sensitive scope, the app can be published to "In production" without Google's sensitive-scope review; brand verification (to show the app name/logo on the consent screen) is optional and requires a public homepage and privacy policy.
 
 ## JavaScript Responsibilities
 
