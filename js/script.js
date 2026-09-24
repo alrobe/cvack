@@ -28,7 +28,8 @@ const ITEM_TEMPLATES = {
 const STORAGE_KEY = "cvack-dev";
 const DRIVE_BACKUP_NAME = "cvack-dev.json";
 const DRIVE_FILE_ID_KEY = "cvack-dev-drive-file-id";
-let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || structuredClone(empty);
+let data = sanitizeData(JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"));
+localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
 function render() {
     const p = data.personal;

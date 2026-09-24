@@ -180,6 +180,25 @@ function pickFields(obj, template) {
     return result;
 }
 
+// Rebuilds a data object field-by-field against empty/ITEM_TEMPLATES, so
+// anything outside the known schema is dropped. Used both when importing a
+// JSON file and when loading whatever's already in localStorage, so `data`
+// is guaranteed schema-clean no matter how it got there (including old
+// localStorage contents saved before this sanitization existed).
+function sanitizeData(raw) {
+    const source = (raw && typeof raw === "object") ? raw : {};
+    const result = pickFields(source, empty);
+    result.personal = pickFields(source.personal, empty.personal);
+    ARRAY_FIELDS.forEach(f => {
+        const items = Array.isArray(source[f]) ? source[f] : [];
+        const template = ITEM_TEMPLATES[f];
+        result[f] = template
+            ? items.map(item => pickFields(item, template))
+            : items.map(item => typeof item === "string" ? item : String(item ?? ""));
+    });
+    return result;
+}
+
 function importJSON(s) {
     const imported = JSON.parse(s);
 
@@ -188,18 +207,7 @@ function importJSON(s) {
         throw new Error("Invalid JSON");
     }
 
-    // Only known fields are kept - anything else in the imported JSON
-    // (extra top-level keys, extra personal/item fields) is dropped here,
-    // so it never ends up in localStorage or a Google Drive backup.
-    data = pickFields(imported, empty);
-    data.personal = pickFields(imported.personal, empty.personal);
-    ARRAY_FIELDS.forEach(f => {
-        const items = Array.isArray(imported[f]) ? imported[f] : [];
-        const template = ITEM_TEMPLATES[f];
-        data[f] = template
-            ? items.map(item => pickFields(item, template))
-            : items.map(item => typeof item === "string" ? item : String(item ?? ""));
-    });
+    data = sanitizeData(imported);
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
