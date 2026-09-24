@@ -21,10 +21,45 @@ const langLevels = ["Beginner", "Moderate", "Good", "Very good", "Fluent", "A1",
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[c]));
 const save = () => { localStorage.setItem("orange-cv", JSON.stringify(data)); preview() };
 const toast = t => { let e = document.getElementById("toast"); e.textContent = t; e.classList.add("show"); setTimeout(() => e.classList.remove("show"), 1700) };
+const RTE_ALLOWED_TAGS = new Set(["B", "I", "U", "STRONG", "EM", "UL", "OL", "LI", "BR", "DIV", "P"]);
+function sanitizeHTML(html) {
+    const container = document.createElement("div");
+    container.innerHTML = html;
+    (function clean(parent) {
+        [...parent.childNodes].forEach(node => {
+            if (node.nodeType === 1) {
+                clean(node);
+                if (!RTE_ALLOWED_TAGS.has(node.tagName)) {
+                    while (node.firstChild) parent.insertBefore(node.firstChild, node);
+                    parent.removeChild(node);
+                } else {
+                    [...node.attributes].forEach(attr => node.removeAttribute(attr.name));
+                }
+            } else if (node.nodeType !== 3) {
+                parent.removeChild(node);
+            }
+        });
+    })(container);
+    return container.innerHTML;
+}
+function toRichHTML(val) {
+    if (!val) return "";
+    return /<(b|i|u|strong|em|ul|ol|li|br|div|p)[\s>/]/i.test(val) ? sanitizeHTML(val) : esc(val).replace(/\n/g, "<br>");
+}
+const getVal = e => e.isContentEditable ? sanitizeHTML(e.innerHTML) : e.value;
 function field(label, key, val, cls = "", attrs = "") {
     return `<div class="field ${cls}"><label>${label}</label><input ${attrs} value="${esc(val)}"></div>`
 }
-function itemButtons(type, i) { return `<div class="item-actions"><div class="reorder"><button title="Subir" data-up="${type}:${i}">↑</button><button title="Bajar" data-down="${type}:${i}">↓</button></div><button class="icon danger" data-del="${type}:${i}">×</button></div>` }
+function richField(label, val, cls = "", attrs = "") {
+    return `<div class="field ${cls}"><label>${label}</label><div class="rte-toolbar">
+ <button type="button" class="rte-btn" data-cmd="bold" title="Bold"><b>B</b></button>
+ <button type="button" class="rte-btn" data-cmd="italic" title="Italic"><i>I</i></button>
+ <button type="button" class="rte-btn" data-cmd="underline" title="Underline"><u>U</u></button>
+ <button type="button" class="rte-btn" data-cmd="insertOrderedList" title="Numbered list">1.</button>
+ <button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="Bulleted list">•</button>
+ </div><div class="rte" contenteditable="true" ${attrs}>${toRichHTML(val)}</div></div>`
+}
+function itemButtons(type, i) { return `<div class="item-actions"><div class="reorder"><button title="Move up" data-up="${type}:${i}">↑</button><button title="Move down" data-down="${type}:${i}">↓</button></div><button class="icon danger" data-del="${type}:${i}">×</button></div>` }
 function render() {
     const p = data.personal;
 
@@ -35,43 +70,40 @@ function render() {
 
     document.getElementById("editor").innerHTML = `
  <section class="section" data-section="personal">
-  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Datos personales</div><button class="circle" data-collapse="personal">⌃</button></div>
+  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Personal details</div><button class="circle" data-collapse="personal">⌃</button></div>
   <div class="section-body">
-   <div class="photo-row"><div class="photo-box">${p.photo ? `<img src="${p.photo}">` : "<span>＋</span>"}</div><div class="photo-info"><b>Foto</b><br>Opcional. Recomendación: imagen profesional cuadrada.<br><button class="btn small" id="photoBtn">Añadir foto</button><button class="btn small hidden" id="removePhoto">Eliminar</button><input id="photoFile" type="file" accept="image/*" hidden></div></div>
+   <div class="photo-row"><div class="photo-box">${p.photo ? `<img src="${p.photo}">` : "<span>＋</span>"}</div><div class="photo-info"><b>Photo</b><br>Optional. Recommendation: square professional image.<br><button class="btn small" id="photoBtn">Add photo</button><button class="btn small hidden" id="removePhoto">Remove</button><input id="photoFile" type="file" accept="image/*" hidden></div></div>
    <div class="grid">
-    ${field("Nombre", "name", p.name, "", `data-p="name"`)}
-    ${field("Apellido", "lastname", p.lastname, "", `data-p="lastname"`)}
-    ${field("Puesto deseado", "headline2", p.headline2, "full", `data-p="headline2"`)}
+    ${field("First name", "name", p.name, "", `data-p="name"`)}
+    ${field("Last name", "lastname", p.lastname, "", `data-p="lastname"`)}
+    ${field("Desired position", "headline2", p.headline2, "full", `data-p="headline2"`)}
     ${field("Email", "email", p.email, "", `data-p="email"`)}
-    ${field("Teléfono", "phone", p.phone, "", `data-p="phone"`)}
+    ${field("Phone", "phone", p.phone, "", `data-p="phone"`)}
     ${field("LinkedIn", "linkedin", p.linkedin, "", `data-p="linkedin"`)}
     ${field("Website", "website", p.website, "", `data-p="website"`)}
-    <div class="field full">
-        <label>Description</label>
-        <textarea id="description">${esc(p.description)}</textarea>
-    </div>
+    ${richField("Description", p.description, "full", `id="description"`)}
    </div>
   </div>
  </section>
 
  <section class="section">
   <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Skills</div><button class="circle" data-collapse="skills">⌃</button></div>
-  <div class="section-body"><div id="skills">${data.skills.map((x, i) => skill(x, i)).join("")}</div><button class="add" id="addSkill">＋ Añadir skill</button></div>
+  <div class="section-body"><div id="skills">${data.skills.map((x, i) => skill(x, i)).join("")}</div><button class="add" id="addSkill">＋ Add skill</button></div>
  </section>
 
  <section class="section">
-  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Experiencia laboral</div><button class="circle" data-collapse="employment">⌃</button></div>
-  <div class="section-body"><div id="jobs">${data.employment.map((x, i) => job(x, i)).join("")}</div><button class="add" id="addJob">＋ Añadir experiencia</button></div>
+  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Work experience</div><button class="circle" data-collapse="employment">⌃</button></div>
+  <div class="section-body"><div id="jobs">${data.employment.map((x, i) => job(x, i)).join("")}</div><button class="add" id="addJob">＋ Add experience</button></div>
  </section>
 
  <section class="section">
-  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Educación</div><button class="circle" data-collapse="education">⌃</button></div>
-  <div class="section-body"><div id="edu">${data.education.map((x, i) => edu(x, i)).join("")}</div><button class="add" id="addEdu">＋ Añadir formación</button></div>
+  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Education</div><button class="circle" data-collapse="education">⌃</button></div>
+  <div class="section-body"><div id="edu">${data.education.map((x, i) => edu(x, i)).join("")}</div><button class="add" id="addEdu">＋ Add education</button></div>
  </section>
 
  <section class="section">
-  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Idiomas</div><button class="circle" data-collapse="languages">⌃</button></div>
-  <div class="section-body"><div id="langs">${data.languages.map((x, i) => lang(x, i)).join("")}</div><button class="add" id="addLang">＋ Añadir idioma</button></div>
+  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Languages</div><button class="circle" data-collapse="languages">⌃</button></div>
+  <div class="section-body"><div id="langs">${data.languages.map((x, i) => lang(x, i)).join("")}</div><button class="add" id="addLang">＋ Add language</button></div>
  </section>`;
     bind();
     document.querySelectorAll("[data-collapse]").forEach(button => {
@@ -81,23 +113,23 @@ function render() {
     });
 }
 function edu(x, i) {
-    return `<div class="item"><div class="item-head"><strong>Formación ${i + 1}</strong>${itemButtons("education", i)}</div><div class="grid">
- ${field("Título / formación", "title", x.title, "", `data-edu="${i}" data-key="title"`)}${field("Institución", "organization", x.organization, "", `data-edu="${i}" data-key="organization"`)}
- ${field("Inicio", "startDate", x.startDate, "", `data-edu="${i}" data-key="startDate"`)}${field("Fin", "endDate", x.endDate, "", `data-edu="${i}" data-key="endDate"`)}
- <div class="field full"><label>Descripción</label><textarea data-edu="${i}" data-key="description">${esc(x.description)}</textarea></div>
+    return `<div class="item"><div class="item-head"><strong>Education ${i + 1}</strong>${itemButtons("education", i)}</div><div class="grid">
+ ${field("Degree / program", "title", x.title, "", `data-edu="${i}" data-key="title"`)}${field("Institution", "organization", x.organization, "", `data-edu="${i}" data-key="organization"`)}
+ ${field("Start", "startDate", x.startDate, "", `data-edu="${i}" data-key="startDate"`)}${field("End", "endDate", x.endDate, "", `data-edu="${i}" data-key="endDate"`)}
+ ${richField("Description", x.description, "full", `data-edu="${i}" data-key="description"`)}
  </div></div>`
 }
 function job(x, i) {
     return `<div class="item">
         <div class="item-head">
-            <strong>Experiencia ${i + 1}</strong>
+            <strong>Experience ${i + 1}</strong>
             ${itemButtons("employment", i)}
         </div>
 
         <div class="grid">
 
             ${field(
-        "Puesto",
+        "Position",
         "title",
         x.title,
         "",
@@ -105,7 +137,7 @@ function job(x, i) {
     )}
 
             ${field(
-        "Empresa / cliente",
+        "Company / client",
         "organization",
         x.organization,
         "",
@@ -113,7 +145,7 @@ function job(x, i) {
     )}
 
             ${field(
-        "Inicio",
+        "Start",
         "startDate",
         x.startDate,
         "",
@@ -121,7 +153,7 @@ function job(x, i) {
     )}
 
             ${field(
-        "Fin",
+        "End",
         "endDate",
         x.endDate,
         "",
@@ -129,7 +161,7 @@ function job(x, i) {
     )}
 
             ${field(
-        "Tecnologías",
+        "Technologies",
         "technologies",
         x.technologies,
         "full",
@@ -153,7 +185,7 @@ function job(x, i) {
     )}
 
             ${field(
-        "Control de versiones",
+        "Version control",
         "versionControl",
         x.versionControl,
         "",
@@ -161,7 +193,7 @@ function job(x, i) {
     )}
 
             ${field(
-        "Gestión de proyecto",
+        "Project management",
         "projectManagement",
         x.projectManagement,
         "",
@@ -176,13 +208,12 @@ function job(x, i) {
         `data-job="${i}" data-key="project"`
     )}
 
-            <div class="field full">
-                <label>Description / logros</label>
-                <textarea
-                    data-job="${i}"
-                    data-key="description"
-                >${esc(x.description)}</textarea>
-            </div>
+            ${richField(
+        "Description / achievements",
+        x.description,
+        "full",
+        `data-job="${i}" data-key="description"`
+    )}
 
         </div>
     </div>`
@@ -193,11 +224,33 @@ function lang(x, i) { return `<div class="lang"><input data-lang="${i}" data-key
 function bind() {
     document.querySelectorAll("[data-p]").forEach(e => e.addEventListener("input", () => { data.personal[e.dataset.p] = e.value; save() }));
     document.getElementById("description").oninput = e => {
-        data.personal.description = e.target.value;
+        data.personal.description = sanitizeHTML(e.target.innerHTML);
         save();
     };
-    document.querySelectorAll("[data-edu]").forEach(e => e.oninput = () => { data.education[+e.dataset.edu][e.dataset.key] = e.value; save() });
-    document.querySelectorAll("[data-job]").forEach(e => e.oninput = () => { data.employment[+e.dataset.job][e.dataset.key] = e.value; save() });
+    document.querySelectorAll("[data-edu]").forEach(e => e.oninput = () => { data.education[+e.dataset.edu][e.dataset.key] = getVal(e); save() });
+    document.querySelectorAll("[data-job]").forEach(e => e.oninput = () => { data.employment[+e.dataset.job][e.dataset.key] = getVal(e); save() });
+    document.querySelectorAll(".rte-toolbar").forEach(toolbar => {
+        const editable = toolbar.nextElementSibling;
+        const buttons = [...toolbar.querySelectorAll("[data-cmd]")];
+        const updateActive = () => buttons.forEach(b => {
+            let isActive = false;
+            try { isActive = document.queryCommandState(b.dataset.cmd) } catch { }
+            b.classList.toggle("active", isActive);
+        });
+        buttons.forEach(btn => {
+            btn.onmousedown = e => e.preventDefault();
+            btn.onclick = () => {
+                editable.focus();
+                document.execCommand("styleWithCSS", false, false);
+                document.execCommand(btn.dataset.cmd, false, null);
+                editable.dispatchEvent(new Event("input", { bubbles: true }));
+                updateActive();
+            };
+        });
+        editable.addEventListener("keyup", updateActive);
+        editable.addEventListener("mouseup", updateActive);
+        editable.addEventListener("focus", updateActive);
+    });
     document.querySelectorAll("[data-skill]").forEach(e => { e.oninput = () => { data.skills[+e.dataset.skill][e.dataset.key] = e.value; save() }; e.onchange = e.oninput });
     document.querySelectorAll("[data-lang]").forEach(e => { e.oninput = () => { data.languages[+e.dataset.lang][e.dataset.key] = e.value; save() }; e.onchange = e.oninput });
     document.querySelectorAll("[data-collapse]").forEach(b => b.onclick = () => b.closest(".section").classList.toggle("collapsed"));
@@ -266,21 +319,21 @@ function preview() {
     document.getElementById("preview").innerHTML = `<div class="paper">
  <aside class="side">
   ${p.photo ? `<div class="photo"><img src="${p.photo}"></div>` : ""}
-  <h1>${esc([p.name, p.lastname].filter(Boolean).join(" ") || "Tu nombre")}</h1>
+  <h1>${esc([p.name, p.lastname].filter(Boolean).join(" ") || "Your name")}</h1>
   ${p.headline2 ? `<div class="headline">${esc(p.headline2)}</div>` : ""}
   <h3>Personal details</h3>
-  <div class="contact">${contact.map(v => `<div>${esc(v)}</div>`).join("") || '<div style="opacity:.6">Email · teléfono · LinkedIn · Website</div>'}</div>
+  <div class="contact">${contact.map(v => `<div>${esc(v)}</div>`).join("") || '<div style="opacity:.6">Email · phone · LinkedIn · Website</div>'}</div>
   ${data.skills.some(x => x.skill) ? `<h3>Skills</h3>${data.skills.filter(x => x.skill).map(x => `<div class="cvskill"><span>${esc(x.skill)}</span>${dots(x.level)}</div>`).join("")}` : ""}
   ${data.languages.some(x => x.language) ? `<h3>Languages</h3>${data.languages.filter(x => x.language).map(x => `<div class="cvskill"><span>${esc(x.language)}</span><span>${esc(x.level)}</span></div>`).join("")}` : ""}
   </aside>
   <main class="main">
   <section>
     <h2>Summary</h2>
-    <p class="profile">
+    <div class="profile">
         ${p.description
-            ? esc(p.description).replace(/\n/g, "<br>")
-            : '<span class="empty">Añade una descripción profesional.</span>'}
-    </p>
+            ? toRichHTML(p.description)
+            : '<span class="empty">Add a professional description.</span>'}
+    </div>
   </section>
   ${data.employment.filter(x => x.title || x.organization).length ? `<section><h2>Experience</h2>${data.employment.filter(x => x.title || x.organization).map(x => `<div class="job"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>
   ${x.technologies ? `<div><b>Technologies:</b> ${esc(x.technologies)}</div>` : ""}
@@ -289,9 +342,9 @@ function preview() {
   ${x.versionControl ? `<div><b>Version Control:</b> ${esc(x.versionControl)}</div>` : ""}
   ${x.projectManagement ? `<div><b>Project Management:</b> ${esc(x.projectManagement)}</div>` : ""}
   ${x.project ? `<div><b>Project:</b> ${esc(x.project)}</div>` : ""}
-  ${x.description ? `<div style="margin-top:4px"><b>Description:</b> </br>${esc(x.description).replace(/\n/g, "<br>")}</div>` : ""}
+  ${x.description ? `<div style="margin-top:4px"><b>Description:</b> </br>${toRichHTML(x.description)}</div>` : ""}
   </div></div>`).join("")}</section>` : ""}
-  ${data.education.filter(x => x.title || x.organization).length ? `<section><h2>Education</h2>${data.education.filter(x => x.title || x.organization).map(x => `<div class="edu"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>${x.description ? `<div style="margin-top:4px">${esc(x.description).replace(/\n/g, "<br>")}</div>` : ""}</div></div>`).join("")}</section>` : ""}
+  ${data.education.filter(x => x.title || x.organization).length ? `<section><h2>Education</h2>${data.education.filter(x => x.title || x.organization).map(x => `<div class="edu"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>${x.description ? `<div style="margin-top:4px">${toRichHTML(x.description)}</div>` : ""}</div></div>`).join("")}</section>` : ""}
   </main></div>`;
 }
 
@@ -328,15 +381,15 @@ function exportJSON() {
         "application/json;charset=utf-8"
     );
 
-    toast("CV exportado correctamente");
+    toast("CV exported successfully");
 }
 
 function importJSON(s) {
     const imported = JSON.parse(s);
 
-    // Validación básica
+    // Basic validation
     if (!imported || typeof imported !== "object") {
-        throw new Error("JSON no válido");
+        throw new Error("Invalid JSON");
     }
 
     data = {
@@ -365,7 +418,7 @@ function importJSON(s) {
     render();
     preview();
 
-    toast("CV importado correctamente");
+    toast("CV imported successfully");
 }
 document.getElementById("export").onclick = () => {
     exportJSON();
@@ -385,7 +438,7 @@ document.getElementById("file").onchange = e => {
             importJSON(r.result);
         } catch (err) {
             console.error(err);
-            alert("JSON no válido");
+            alert("Invalid JSON");
         }
     };
 
@@ -406,8 +459,8 @@ document.getElementById("pdf").onclick = () => {
         }, 1000);
     }, 250);
 };
-// --- Respaldo en Google Drive ---
-// Client ID de OAuth (público, no es secreto): reemplazar por el generado en
+// --- Google Drive backup ---
+// OAuth Client ID (public, not a secret): replace with the one generated in
 // Google Cloud Console > APIs & Services > Credentials.
 const GOOGLE_CLIENT_ID = "321086939910-smdq0cs6dhijrdiauq7bmk2fntj8lmip.apps.googleusercontent.com";
 const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.appdata";
@@ -445,7 +498,7 @@ function requestDriveAccessToken(onToken) {
         return;
     }
     if (!window.google?.accounts?.oauth2) {
-        toast("Google todavía no cargó, intenta de nuevo en unos segundos");
+        toast("Google hasn't loaded yet, try again in a few seconds");
         return;
     }
     if (!driveTokenClient) {
@@ -458,7 +511,7 @@ function requestDriveAccessToken(onToken) {
     driveTokenClient.callback = resp => {
         if (resp.error) {
             console.error(resp);
-            toast("No se pudo conectar con Google");
+            toast("Could not connect to Google");
             return;
         }
         cacheDriveAccessToken(resp.access_token, resp.expires_in);
@@ -472,7 +525,7 @@ function driveBackup() {
 }
 
 function driveRestore() {
-    if (!confirm("¿Reemplazar el CV actual con el respaldo guardado en Google Drive? Los cambios no respaldados se perderán.")) return;
+    if (!confirm("Replace the current CV with the backup saved in Google Drive? Unsaved changes will be lost.")) return;
     requestDriveAccessToken(downloadBackupFromDrive);
 }
 
@@ -521,7 +574,7 @@ async function uploadBackupToDrive(accessToken) {
 
         if (res.status === 401) {
             clearCachedDriveAccessToken();
-            toast("La sesión con Google expiró, intenta de nuevo");
+            toast("The Google session expired, try again");
             return;
         }
         if (res.status === 404 && fileId) {
@@ -532,10 +585,10 @@ async function uploadBackupToDrive(accessToken) {
 
         const result = await res.json();
         localStorage.setItem(DRIVE_FILE_ID_KEY, result.id);
-        toast("Respaldo guardado en Google Drive");
+        toast("Backup saved to Google Drive");
     } catch (err) {
         console.error(err);
-        toast("Error al respaldar en Google Drive");
+        toast("Error backing up to Google Drive");
     }
 }
 
@@ -543,7 +596,7 @@ async function downloadBackupFromDrive(accessToken) {
     try {
         const fileId = localStorage.getItem(DRIVE_FILE_ID_KEY) || await findDriveBackupFileId(accessToken);
         if (!fileId) {
-            toast("No hay ningún respaldo guardado en Google Drive");
+            toast("There is no backup saved in Google Drive");
             return;
         }
 
@@ -554,12 +607,12 @@ async function downloadBackupFromDrive(accessToken) {
 
         if (fileRes.status === 401) {
             clearCachedDriveAccessToken();
-            toast("La sesión con Google expiró, intenta de nuevo");
+            toast("The Google session expired, try again");
             return;
         }
         if (fileRes.status === 404) {
             localStorage.removeItem(DRIVE_FILE_ID_KEY);
-            toast("El respaldo ya no existe en Google Drive");
+            toast("The backup no longer exists in Google Drive");
             return;
         }
         if (!fileRes.ok) throw new Error(`Drive API error ${fileRes.status}`);
@@ -569,7 +622,7 @@ async function downloadBackupFromDrive(accessToken) {
         importJSON(text);
     } catch (err) {
         console.error(err);
-        toast("Error al restaurar desde Google Drive");
+        toast("Error restoring from Google Drive");
     }
 }
 

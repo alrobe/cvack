@@ -191,7 +191,7 @@ The description is displayed in the CV preview under the **Profile** section.
 Click:
 
 ```text
-＋ Añadir formación
+＋ Add education
 ```
 
 You can add multiple education entries.
@@ -211,7 +211,7 @@ Education entries can be reordered or removed.
 Click:
 
 ```text
-＋ Añadir experiencia
+＋ Add experience
 ```
 
 You can add multiple employment entries and reorder them.
@@ -237,7 +237,7 @@ This structure is especially useful for documenting software development experie
 Click:
 
 ```text
-＋ Añadir skill
+＋ Add skill
 ```
 
 Each skill can have a proficiency level.
@@ -257,7 +257,7 @@ Skills are displayed in the CV preview with a visual proficiency indicator.
 Click:
 
 ```text
-＋ Añadir idioma
+＋ Add language
 ```
 
 Available language levels include:
@@ -283,7 +283,7 @@ The application supports an optional profile photo.
 Click:
 
 ```text
-Añadir foto
+Add photo
 ```
 
 Select an image from your computer.
@@ -293,7 +293,7 @@ The image is converted to a data URL and stored locally with the CV data.
 You can remove the photo at any time using:
 
 ```text
-Eliminar
+Remove
 ```
 
 ## Live Preview
@@ -486,9 +486,9 @@ There are no npm dependencies.
 
 ## Google Drive Backup
 
-The **Respaldar con Google** button lets a user sign in with their Google account and save their CV JSON to a hidden, app-specific folder in their own Google Drive (the "Application Data" folder), using Google Identity Services and the Drive API (`drive.appdata` scope) entirely from the browser — no server involved. This backup is not visible in the user's regular Drive and can only be retrieved through CVack itself; use **Exportar Json** if you want a copy you can see, move, or share manually. Each backup overwrites the same hidden file rather than creating a new one every time.
+The **Back up with Google** button lets a user sign in with their Google account and save their CV JSON to a hidden, app-specific folder in their own Google Drive (the "Application Data" folder), using Google Identity Services and the Drive API (`drive.appdata` scope) entirely from the browser — no server involved. This backup is not visible in the user's regular Drive and can only be retrieved through CVack itself; use **Export Json** if you want a copy you can see, move, or share manually. Each backup overwrites the same hidden file rather than creating a new one every time.
 
-The **Restaurar de Google** button does the reverse: it signs in, fetches that same hidden backup file, and loads it into the editor (after asking for confirmation, since it replaces whatever is currently open). Use it to keep editing a CV from a different browser or computer than the one it was backed up from.
+The **Restore from Google** button does the reverse: it signs in, fetches that same hidden backup file, and loads it into the editor (after asking for confirmation, since it replaces whatever is currently open). Use it to keep editing a CV from a different browser or computer than the one it was backed up from.
 
 If you fork or self-host CVack on a different domain, this feature requires its own OAuth Web Client ID:
 

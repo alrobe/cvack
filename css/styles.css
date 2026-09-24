@@ -195,7 +195,8 @@ button {
 
 .field input,
 .field textarea,
-.field select {
+.field select,
+.field .rte {
     width: 100%;
     border: 1px solid #dedee3;
     border-radius: 9px;
@@ -207,7 +208,8 @@ button {
 
 .field input:focus,
 .field textarea:focus,
-.field select:focus {
+.field select:focus,
+.field .rte:focus {
     border-color: #5c91ea;
     background: #fff;
     box-shadow: 0 0 0 3px #3974d91a
@@ -216,6 +218,48 @@ button {
 textarea {
     min-height: 125px;
     resize: vertical
+}
+
+.rte-toolbar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px
+}
+
+.rte-btn {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #c9c9cf;
+    border-radius: 9px;
+    background: #fff;
+    font-size: 13px;
+    color: #444
+}
+
+.rte-btn:hover {
+    border-color: #5c91ea;
+    color: var(--blue)
+}
+
+.rte-btn.active {
+    background: var(--blue2);
+    border-color: var(--blue);
+    color: var(--blue)
+}
+
+.field .rte {
+    min-height: 125px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word
+}
+
+.rte ul,
+.rte ol {
+    margin: 0;
+    padding-left: 20px
 }
 
 .photo-row {
@@ -482,6 +526,16 @@ textarea {
     font-size: 11.5px;
     line-height: 1.5;
     margin: 0
+}
+
+.profile ul,
+.profile ol,
+.job ul,
+.job ol,
+.edu ul,
+.edu ol {
+    margin: 6px 0;
+    padding-left: 18px
 }
 
 .edu,
