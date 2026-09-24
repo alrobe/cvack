@@ -27,6 +27,8 @@ Deployed via GitHub Pages (branch `main`, root) at `https://cvack.arobasoft.com`
 
 That workflow never touches the `main` branch ref itself (it only creates a tag and a Release, both under `refs/tags/*`), so it's unaffected by the PR-required branch protection above — no bypass or special permission is needed for it to run.
 
+`.github/workflows/pr-title.yml` (via `amannn/action-semantic-pull-request`) enforces the Conventional Commits format on every PR's *title* — since this repo merges via PR, the PR title is what typically becomes the actual commit message that lands on `main` (a squash-merge uses it directly), which is what `release.yml` reads to compute the version bump. This check only fails the PR's status check; it doesn't block the merge by itself — for that, add it as a required status check under the `main` branch protection rule in the repo's GitHub settings (Settings → Branches → edit the `main` rule → Require status checks to pass → select this workflow's job).
+
 `index.html`'s footer shows the currently deployed version by fetching `GET https://api.github.com/repos/alrobe/cvack/releases/latest` client-side and reading `.tag_name` — not from a committed file, so there's no build step involved and it can never go stale. The fetch fails silently (the version just stays hidden) if the API is unreachable or rate-limited, since this is purely cosmetic and must never surface as a visible error.
 
 The very first tag, `v1.0.0`, was created manually (`git tag -a v1.0.0 -m v1.0.0`, plus a matching `gh release create`) since there was no prior tag for the workflow to compute a bump from. Every tag/release after that is 100% automatic.
