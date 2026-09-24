@@ -19,6 +19,18 @@ Then visit `http://localhost:8000`. There is no build, lint, or test tooling in 
 
 Deployed via GitHub Pages (branch `main`, root) at `https://cvack.arobasoft.com`, configured by the `CNAME` file plus a DNS CNAME record `cvack` → `alrobe.github.io` at Hostinger. The old `https://alrobe.github.io/cvack/` URL 301-redirects there. Since `localStorage` is per-origin, CVs saved under the old URL do not carry over automatically (users can restore from Google Drive or re-import JSON).
 
+`main` requires pull requests (a branch protection rule) — commits don't land there directly.
+
+## Versioning and releases
+
+**Commit messages (and PR titles, if a PR gets squash-merged) must follow [Conventional Commits](https://www.conventionalcommits.org/)** — `feat: ...` (bumps minor), `fix: ...` (bumps patch), `feat!: ...` or a `BREAKING CHANGE:` footer (bumps major), `chore:`/`docs:`/`refactor:`/etc. (any commit `.github/workflows/release.yml` doesn't recognize falls back to a patch bump, so it never blocks). `.github/workflows/release.yml` reads exactly this on every push to `main` to compute and push the next semver git tag automatically via `mathieudutour/github-tag-action`, then creates a matching GitHub Release via `softprops/action-gh-release`. This is the reason for the convention — going forward, when drafting a commit message or PR title in this repo, use the `type: description` prefix.
+
+That workflow never touches the `main` branch ref itself (it only creates a tag and a Release, both under `refs/tags/*`), so it's unaffected by the PR-required branch protection above — no bypass or special permission is needed for it to run.
+
+`index.html`'s footer shows the currently deployed version by fetching `GET https://api.github.com/repos/alrobe/cvack/releases/latest` client-side and reading `.tag_name` — not from a committed file, so there's no build step involved and it can never go stale. The fetch fails silently (the version just stays hidden) if the API is unreachable or rate-limited, since this is purely cosmetic and must never surface as a visible error.
+
+The very first tag, `v1.0.0`, was created manually (`git tag -a v1.0.0 -m v1.0.0`, plus a matching `gh release create`) since there was no prior tag for the workflow to compute a bump from. Every tag/release after that is 100% automatic.
+
 ## Architecture
 
 - `index.html` — home page linking to the two CV editors (`cv-general.html`, `cv-dev.html`), styled by `css/home.css`.

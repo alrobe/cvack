@@ -129,9 +129,23 @@
         <span>Create. Customize. Stand out.</span>
         <span>•</span>
         <a href="./privacy.html">Privacy Policy</a>
+        <span id="appVersion" hidden></span>
     </footer>
 
 </main>
+
+<script>
+fetch('https://api.github.com/repos/alrobe/cvack/releases/latest')
+    .then(r => r.ok ? r.json() : null)
+    .then(release => {
+        if (!release || !release.tag_name) return;
+        const el = document.getElementById('appVersion');
+        el.textContent = '• ' + release.tag_name;
+        el.hidden = false;
+    })
+    .catch(() => {}); // Showing the version is cosmetic - never let a failed
+                       // fetch (rate limit, offline) surface as a visible error.
+</script>
 
 </body>
 </html>
