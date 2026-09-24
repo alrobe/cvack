@@ -23,10 +23,6 @@ button {
     z-index: 30
 }
 
-.logo {
-    font-size: 21px
-}
-
 .top-actions {
     display: flex;
     gap: 8px
