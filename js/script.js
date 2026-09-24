@@ -1,4 +1,8 @@
+const CV_TYPE = "dev";
+const SCHEMA_VERSION = 1;
 const empty = {
+    cvType: CV_TYPE,
+    schemaVersion: SCHEMA_VERSION,
     personal: {
         name: "",
         lastname: "",
@@ -24,6 +28,14 @@ const ITEM_TEMPLATES = {
     employment: { title: "", organization: "", startDate: "", endDate: "", technologies: "", tools: "", framework: "", versionControl: "", projectManagement: "", project: "", description: "" },
     skills: { skill: "", level: "Good" },
     languages: { language: "", level: "B2" }
+};
+const MIGRATIONS = {
+    // No real migrations yet - today's shape IS schema version 1. This
+    // registry exists so a future schema change has somewhere to plug in.
+    // Shape: { [fromVersion]: (raw) => raw reshaped to look like fromVersion + 1 }
+    //
+    // Example of what a *future* entry would look like (not real, do not add):
+    // 1: (raw) => { raw.skills = (raw.skills || []).map(s => ({ ...s, category: "" })); return raw; }
 };
 const STORAGE_KEY = "cvack-dev";
 const DRIVE_BACKUP_NAME = "cvack-dev.json";

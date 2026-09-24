@@ -180,24 +180,52 @@ function pickFields(obj, template) {
     return result;
 }
 
+// Bridges an older schemaVersion up to SCHEMA_VERSION using this file's own
+// MIGRATIONS registry, before sanitizeData's pickFields-based filtering runs
+// as the final safety net. No real migrations exist yet (today's shape IS
+// version 1) - this only exists so a future schema change has somewhere to
+// plug in.
+function runMigrations(raw) {
+    // No schemaVersion at all is pre-this-feature legacy data, which already
+    // matches today's shape - stamp it as SCHEMA_VERSION directly rather
+    // than treating it as a special "version 0" needing migration.
+    let version = Number.isInteger(raw.schemaVersion) ? raw.schemaVersion : SCHEMA_VERSION;
+    while (version < SCHEMA_VERSION) {
+        const migrate = MIGRATIONS[version];
+        if (typeof migrate !== "function") break; // nothing registered for this gap; pickFields below is still the final safety net
+        raw = migrate(raw) || raw;
+        version++;
+    }
+    raw.schemaVersion = SCHEMA_VERSION;
+    return raw;
+}
+
 // Rebuilds a data object field-by-field against empty/ITEM_TEMPLATES, so
 // anything outside the known schema is dropped. Used both when importing a
 // JSON file and when loading whatever's already in localStorage, so `data`
 // is guaranteed schema-clean no matter how it got there (including old
 // localStorage contents saved before this sanitization existed).
 function sanitizeData(raw) {
-    const source = (raw && typeof raw === "object") ? raw : {};
-    const result = pickFields(source, empty);
-    result.personal = pickFields(source.personal, empty.personal);
+    const migrated = runMigrations((raw && typeof raw === "object") ? raw : {});
+    const result = pickFields(migrated, empty);
+    result.personal = pickFields(migrated.personal, empty.personal);
     ARRAY_FIELDS.forEach(f => {
-        const items = Array.isArray(source[f]) ? source[f] : [];
+        const items = Array.isArray(migrated[f]) ? migrated[f] : [];
         const template = ITEM_TEMPLATES[f];
         result[f] = template
             ? items.map(item => pickFields(item, template))
             : items.map(item => typeof item === "string" ? item : String(item ?? ""));
     });
+    // cvType always reflects this editor's own type, never a value carried
+    // over from imported/localStorage data - same reasoning already applied
+    // to STORAGE_KEY/ARRAY_FIELDS/ITEM_TEMPLATES not trusting the imported
+    // shape. The imported file's own cvType is only read, pre-sanitize, for
+    // the mismatch check in importJSON below.
+    result.cvType = CV_TYPE;
     return result;
 }
+
+const CV_TYPE_LABELS = { general: "General", dev: "Developer" };
 
 function importJSON(s) {
     const imported = JSON.parse(s);
@@ -205,6 +233,17 @@ function importJSON(s) {
     // Basic validation
     if (!imported || typeof imported !== "object") {
         throw new Error("Invalid JSON");
+    }
+
+    // Cross-type import guard. Treats a missing cvType (e.g. a JSON exported
+    // before this feature existed) the same as a known mismatch, per
+    // explicit user direction, rather than silently letting it through.
+    if (imported.cvType !== CV_TYPE) {
+        const toLabel = CV_TYPE_LABELS[CV_TYPE] || CV_TYPE;
+        const message = imported.cvType
+            ? `This file is a ${CV_TYPE_LABELS[imported.cvType] || imported.cvType} CV, but you're using the ${toLabel} CV editor. Import anyway? Fields that don't apply will be dropped.`
+            : `This file doesn't specify a CV type, so it might not match the ${toLabel} CV editor. Import anyway? Fields that don't apply will be dropped.`;
+        if (!confirm(message)) return;
     }
 
     data = sanitizeData(imported);
