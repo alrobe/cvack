@@ -1,7 +1,7 @@
 const empty = {
     personal: {
         name: "",
-        headline: "",
+        lastname: "",
         headline2: "",
         email: "",
         phone: "",
@@ -85,7 +85,7 @@ function render() {
    <div class="photo-row"><div class="photo-box">${p.photo ? `<img src="${p.photo}">` : "<span>＋</span>"}</div><div class="photo-info"><b>Photo</b><br>Optional. Recommendation: square professional image.<br><button class="btn small" id="photoBtn">Add photo</button><button class="btn small hidden" id="removePhoto">Remove</button><input id="photoFile" type="file" accept="image/*" hidden></div></div>
    <div class="grid">
     ${field("First name", "name", p.name, "", `data-p="name"`)}
-    ${field("Last name", "headline", p.headline, "", `data-p="headline"`)}
+    ${field("Last name", "lastname", p.lastname, "", `data-p="lastname"`)}
     ${field("Desired position", "headline2", p.headline2 || "", "", `data-p="headline2"`)}
     ${field("Email", "email", p.email, "", `data-p="email"`)}
     ${field("Phone", "phone", p.phone, "", `data-p="phone"`)}
@@ -152,8 +152,6 @@ function job(x, i) {
     return `<div class="item"><div class="item-head"><strong>Experience ${i + 1}</strong>${itemButtons("employment", i)}</div><div class="grid">
  ${field("Position", "title", x.title, "", `data-job="${i}" data-key="title"`)}${field("Company / client", "organization", x.organization, "", `data-job="${i}" data-key="organization"`)}
  ${field("Start", "startDate", x.startDate, "", `data-job="${i}" data-key="startDate"`)}${field("End", "endDate", x.endDate, "", `data-job="${i}" data-key="endDate"`)}
- ${field("Technologies", "technologies", x.technologies, "full", `data-job="${i}" data-key="technologies"`)}${field("Tools", "tools", x.tools, "full", `data-job="${i}" data-key="tools"`)}
- ${field("Version control", "versionControl", x.versionControl, "", `data-job="${i}" data-key="versionControl"`)}${field("Project management", "projectManagement", x.projectManagement, "", `data-job="${i}" data-key="projectManagement"`)}
  ${richField("Description / achievements", x.description, "full", `data-job="${i}" data-key="description"`)}
  </div></div>`}
 function skill(x, i) { return `<div class="skill"><input data-skill="${i}" data-key="skill" value="${esc(x.skill)}"><select data-skill="${i}" data-key="level">${skillLevels.map(v => `<option ${v == x.level ? "selected" : ""}>${v}</option>`).join("")}</select><button class="icon danger" data-del-skill="${i}">×</button></div>` }
@@ -207,7 +205,7 @@ function bind() {
         render();
         save()
     };
-    document.getElementById("addJob").onclick = () => { data.employment.push({ title: "", organization: "", startDate: "", endDate: "", technologies: "", tools: "", versionControl: "", projectManagement: "", description: "" }); render(); save() };
+    document.getElementById("addJob").onclick = () => { data.employment.push({ title: "", organization: "", startDate: "", endDate: "", description: "" }); render(); save() };
     document.getElementById("addSkill").onclick = () => { data.skills.push({ skill: "", level: "Good" }); render(); save() };
     document.getElementById("addLang").onclick = () => { data.languages.push({ language: "", level: "B2" }); render(); save() };
     document.getElementById("addHobby").onclick = () => { data.hobbies.push(""); render(); save() };
@@ -235,7 +233,7 @@ function preview() {
     document.getElementById("preview").innerHTML = `<div class="paper">
  <aside class="side">
   ${p.photo ? `<div class="photo"><img src="${p.photo}"></div>` : ""}
-  <h1>${esc([p.name, p.headline].filter(Boolean).join(" ") || "Your name")}</h1>
+  <h1>${esc([p.name, p.lastname].filter(Boolean).join(" ") || "Your name")}</h1>
   ${p.headline2 ? `<div class="headline">${esc(p.headline2)}</div>` : ""}
   <h3>Personal details</h3>
   <div class="contact">${contact.map(v => `<div>${esc(v)}</div>`).join("") || '<div style="opacity:.6">Email · phone · city</div>'}</div>
@@ -246,7 +244,7 @@ function preview() {
  <main class="main">
   <section><h2>Profile</h2><div class="profile">${data.profile ? toRichHTML(data.profile) : '<span class="empty">Add a professional description.</span>'}</div></section>
   ${data.employment.filter(x => x.title || x.organization).length ? `<section><h2>Employment</h2>${data.employment.filter(x => x.title || x.organization).map(x => `<div class="job"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>
-  ${x.technologies ? `<div><b>Technologies:</b> ${esc(x.technologies)}</div>` : ""}${x.tools ? `<div><b>Tools:</b> ${esc(x.tools)}</div>` : ""}${x.versionControl ? `<div><b>Version Control:</b> ${esc(x.versionControl)}</div>` : ""}${x.projectManagement ? `<div><b>Project Management:</b> ${esc(x.projectManagement)}</div>` : ""}${x.description ? `<div style="margin-top:4px">${toRichHTML(x.description)}</div>` : ""}</div></div>`).join("")}</section>` : ""}
+  ${x.description ? `<div style="margin-top:4px">${toRichHTML(x.description)}</div>` : ""}</div></div>`).join("")}</section>` : ""}
   ${data.education.filter(x => x.title || x.organization).length ? `<section><h2>Education</h2>${data.education.filter(x => x.title || x.organization).map(x => `<div class="edu"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>${x.description ? `<div style="margin-top:4px">${toRichHTML(x.description)}</div>` : ""}</div></div>`).join("")}</section>` : ""}
   </main></div>`;
 }
@@ -254,7 +252,7 @@ function preview() {
 function getResumeFileName(extension) {
     const p = data.personal;
 
-    const name = [p.name, p.headline]
+    const name = [p.name, p.lastname]
         .filter(Boolean)
         .join("_");
 
