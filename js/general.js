@@ -21,6 +21,8 @@ const empty = {
 };
 const ARRAY_FIELDS = ["education", "employment", "skills", "languages", "hobbies"];
 const STORAGE_KEY = "cvack-general";
+const DRIVE_BACKUP_NAME = "CVack-Backup-General.json";
+const DRIVE_FILE_ID_KEY = "cvack-general-drive-file-id";
 let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || structuredClone(empty);
 
 function render() {

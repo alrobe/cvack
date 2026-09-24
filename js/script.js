@@ -20,6 +20,8 @@ const empty = {
 };
 const ARRAY_FIELDS = ["education", "employment", "skills", "languages"];
 const STORAGE_KEY = "cvack-dev";
+const DRIVE_BACKUP_NAME = "CVack-Backup-Dev.json";
+const DRIVE_FILE_ID_KEY = "cvack-dev-drive-file-id";
 let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || structuredClone(empty);
 
 function render() {

@@ -257,8 +257,6 @@ document.getElementById("pdf").onclick = () => {
 // Google Cloud Console > APIs & Services > Credentials.
 const GOOGLE_CLIENT_ID = "321086939910-smdq0cs6dhijrdiauq7bmk2fntj8lmip.apps.googleusercontent.com";
 const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.appdata";
-const DRIVE_BACKUP_NAME = "CVack-Backup.json";
-const DRIVE_FILE_ID_KEY = "orange-cv-drive-file-id";
 const DRIVE_TOKEN_KEY = "orange-cv-drive-token";
 
 let driveTokenClient = null;
