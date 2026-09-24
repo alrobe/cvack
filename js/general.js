@@ -16,9 +16,9 @@ const empty = {
         gender: "",
         nationality: "",
         civilStatus: "",
+        description: "",
         photo: ""
     },
-    profile: "",
     education: [],
     employment: [],
     skills: [],
@@ -101,12 +101,8 @@ function render() {
     ${field("Nationality", "nationality", p.nationality, "", `data-p="nationality"`)}
     ${field("Civil status", "civilStatus", p.civilStatus, "", `data-p="civilStatus"`)}
    </div>
+   ${richField("Description", p.description, "", `id="description"`)}
   </div>
- </section>
-
- <section class="section">
-  <div class="section-head"><div class="section-title"><span class="grip">⠿</span>Profile</div><button class="circle" data-collapse="profile">⌃</button></div>
-  <div class="section-body">${richField("Description", data.profile, "", `id="profile"`)}</div>
  </section>
 
  <section class="section">
@@ -159,7 +155,7 @@ function lang(x, i) { return `<div class="lang"><input data-lang="${i}" data-key
 
 function bind() {
     document.querySelectorAll("[data-p]").forEach(e => e.addEventListener("input", () => { data.personal[e.dataset.p] = e.value; save() }));
-    document.getElementById("profile").oninput = e => { data.profile = sanitizeHTML(e.target.innerHTML); save() };
+    document.getElementById("description").oninput = e => { data.personal.description = sanitizeHTML(e.target.innerHTML); save() };
     document.querySelectorAll("[data-edu]").forEach(e => e.oninput = () => { data.education[+e.dataset.edu][e.dataset.key] = getVal(e); save() });
     document.querySelectorAll("[data-job]").forEach(e => e.oninput = () => { data.employment[+e.dataset.job][e.dataset.key] = getVal(e); save() });
     document.querySelectorAll(".rte-toolbar").forEach(toolbar => {
@@ -242,7 +238,7 @@ function preview() {
   ${data.hobbies.filter(Boolean).length ? `<h3>Hobbies</h3><div class="contact">${data.hobbies.filter(Boolean).map(x => `<div>${esc(x)}</div>`).join("")}</div>` : ""}
  </aside>
  <main class="main">
-  <section><h2>Profile</h2><div class="profile">${data.profile ? toRichHTML(data.profile) : '<span class="empty">Add a professional description.</span>'}</div></section>
+  <section><h2>Profile</h2><div class="profile">${p.description ? toRichHTML(p.description) : '<span class="empty">Add a professional description.</span>'}</div></section>
   ${data.employment.filter(x => x.title || x.organization).length ? `<section><h2>Employment</h2>${data.employment.filter(x => x.title || x.organization).map(x => `<div class="job"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>
   ${x.description ? `<div style="margin-top:4px">${toRichHTML(x.description)}</div>` : ""}</div></div>`).join("")}</section>` : ""}
   ${data.education.filter(x => x.title || x.organization).length ? `<section><h2>Education</h2>${data.education.filter(x => x.title || x.organization).map(x => `<div class="edu"><div class="date">${esc(x.startDate)}${x.endDate ? ` - ${esc(x.endDate)}` : ""}</div><div><div class="role">${esc(x.title)}</div><div class="org">${esc(x.organization)}</div>${x.description ? `<div style="margin-top:4px">${toRichHTML(x.description)}</div>` : ""}</div></div>`).join("")}</section>` : ""}
